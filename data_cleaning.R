@@ -1,6 +1,8 @@
 library(tidyverse)
 library(haven)
 library(tools)
+library(purrr)
+library(lubridate)
 
 path <- "~/R PRACTICE/SAS2024CP25"
 
@@ -14,7 +16,6 @@ data <- lapply(files, read_sas, n_max = 1000)
 
 names(data) <- file_path_sans_ext(basename(files))
 
-library(purrr)
 use_tables <- c("pub_pcrevents",
                 "pcrpatientracegroup",
                 "factpcrturnarounddelay",
@@ -27,7 +28,7 @@ use_data <- data[use_tables] %>%
   reduce(left_join, by = "PcrKey")
 
 
-# CLEANING ----------------------------------------------------------------
+# Renaming variables ------------------------------------------------------
 
 select_data <- use_data %>% 
   select(PcrKey, contains(c("Dispatch", "Disposition", "Response", "Times", "Patient_", "Crew"))) %>% 
@@ -66,9 +67,15 @@ select_data <- use_data %>%
     patient_race = ePatient_14
   )
 
+
+# Removing NAs ------------------------------------------------------------
+
 to_NA <- c("7701003", "7701001", "7701005", "Not Recorded", "Not Applicable")
 clean_NA <- select_data %>% 
   mutate(across(everything(), ~ if_else(.x %in% to_NA, NA, .x)))
+
+
+# Event table -------------------------------------------------------------
 
 event_df <- clean_NA %>% 
   select(PcrKey, dispatch_reason:type_of_response_delay) %>% 
@@ -381,12 +388,17 @@ event_df <- clean_NA %>%
     )
   )
 
-library(lubridate)
+
+# Time table --------------------------------------------------------------
+
 time_df <- clean_NA %>% 
   select(PcrKey, PSAP_call_datetime:unit_back_in_service_datetime) %>% 
   mutate(
     across(PSAP_call_datetime:unit_back_in_service_datetime, ~ as.POSIXct(fast_strptime(.x, format = "%d%b%Y:%H:%M:%S"))
   ))
+
+
+# Patient table -----------------------------------------------------------
 
 patient_df <- clean_NA %>% 
   select(PcrKey, patient_age:patient_race) %>% 
