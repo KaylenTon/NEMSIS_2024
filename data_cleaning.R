@@ -420,3 +420,17 @@ patient_df <- clean_NA %>%
       "2514011" = "White",
       "2514013" = "Middle Eastern or North African")
   )
+
+# Standardizing age units all to years. If anyone is below 12 months of age, whether in months, days, hours, or minutes, they're 0 years old. If a baby is in between 12 and 24 months, they're one.
+patient_df <- patient_df %>% 
+  mutate(
+    patient_age = case_when(
+      patient_age_units == "Years"  ~ patient_age,
+      patient_age_units == "Months" ~ patient_age %/% 12,
+      patient_age_units == "Days" ~ patient_age %/% 365,
+      patient_age_units == "Hours" ~ patient_age %/% 8760,
+      patient_age_units == "Minutes" ~ patient_age %/% 525600,
+      is.na(patient_age_units) ~ patient_age
+    )
+  ) %>% 
+  select(-patient_age_units)
