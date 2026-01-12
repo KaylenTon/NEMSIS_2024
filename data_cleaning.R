@@ -25,8 +25,8 @@ use_tables <- c("pub_pcrevents",
                 "factpcrdestinationteam")
 
 use_data <- data[use_tables] %>% 
-  reduce(left_join, by = "PcrKey")
-
+  reduce(left_join, by = "PcrKey") %>% 
+  distinct(PcrKey, .keep_all = TRUE)
 
 # Renaming variables ------------------------------------------------------
 
@@ -411,6 +411,7 @@ time_df <- time_df %>%
 #     event_length_minutes = round(event_length_minutes, 2)
 #   )
 
+
 # Patient table -----------------------------------------------------------
 
 patient_df <- clean_NA %>% 
@@ -449,5 +450,9 @@ patient_df <- patient_df %>%
   select(-patient_age_units) %>% 
   mutate(
     age_group = ifelse(patient_age >= 65, "Senior", "Younger")
+  ) %>% 
+  rename(
+    patient_age_years = patient_age
   )
+
 
