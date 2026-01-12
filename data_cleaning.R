@@ -397,6 +397,19 @@ time_df <- clean_NA %>%
     across(PSAP_call_datetime:unit_back_in_service_datetime, ~ as.POSIXct(fast_strptime(.x, format = "%d%b%Y:%H:%M:%S"))
   ))
 
+# Creating event_length_minutes variable
+time_df <- time_df %>% 
+  mutate(
+    event_length_minutes = as.numeric(difftime(unit_back_in_service_datetime, unit_notified_by_dispatch_datetime, units = "mins")),
+    event_length_minutes = round(event_length_minutes, 2)
+  )
+
+# # Duration option
+# time_df_2 <- time_df %>% 
+#   mutate(
+#     event_length_minutes = difftime(unit_back_in_service_datetime, unit_notified_by_dispatch_datetime, units = "mins"),
+#     event_length_minutes = round(event_length_minutes, 2)
+#   )
 
 # Patient table -----------------------------------------------------------
 
@@ -437,3 +450,4 @@ patient_df <- patient_df %>%
   mutate(
     age_group = ifelse(patient_age >= 65, "Senior", "Younger")
   )
+
