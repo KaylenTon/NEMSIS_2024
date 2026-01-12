@@ -3,14 +3,14 @@ library(ggplot2)
 library(hms)
 
 # unique minute
-calls_per_interval_unique_minute <- time_df %>% 
-  select(PcrKey, unit_notified_by_dispatch_datetime) %>% 
-  mutate(PSAP_time = as_hms(unit_notified_by_dispatch_datetime)) %>% 
-  group_by(PSAP_time) %>% 
-  count() %>% 
-  arrange(desc(n)) %>% 
+calls_per_interval_unique_minute <- time_df %>%
+  select(PcrKey, unit_notified_by_dispatch_datetime) %>%
+  mutate(unit_notified_time = as_hms(unit_notified_by_dispatch_datetime)) %>%
+  group_by(unit_notified_time) %>%
+  count() %>%
+  arrange(desc(n)) %>%
   mutate(
-    hour = hour(PSAP_time),
+    hour = hour(unit_notified_time),
     interval_per_8 = hour %/% 8,
     interval_per_8 = case_when(
       interval_per_8 == 0 ~ "A", #00:00:00 - 07:59:00
@@ -19,11 +19,16 @@ calls_per_interval_unique_minute <- time_df %>%
     )
   )
 
-calls_per_interval_unique_minute %>% 
-  group_by(interval_per_8) %>% 
-  count()
+calls_per_interval_unique_minute %>%
+  group_by(interval_per_8) %>%
+  summarise(sum = sum(n))
 
-ggplot(calls_per_interval_unique_minute, aes(x = PSAP_time, y = n, color = interval_per_8)) + geom_line() + scale_y_continuous(limits = c(0, 5))
+calls_per_interval_unique_minute %>% 
+  filter(interval_per_8 == "A") %>% 
+  group_by(interval_per_8) %>%
+  summarise(total_calls = sum(n))
+
+ggplot(calls_per_interval_unique_minute, aes(x = unit_notified_time, y = n, color = interval_per_8)) + geom_line() + scale_y_continuous(limits = c(0, 5))
 
 
 # unique hour
@@ -65,5 +70,4 @@ ggplot(calls_per_interval_unique_hour, aes(x = unit_notified_time, y = n, color 
 
 calls_per_interval_unique_hour %>% 
   group_by(interval_per_8) %>% 
-  count() %>% 
-  summarise(sum = sum(n)) # ERROR
+  summarise(sum = sum(n))
