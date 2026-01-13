@@ -113,16 +113,10 @@ ggplot(calls_per_interval_variables, aes(x = unit_notified_time, y = count, colo
 
 # Maybe should create an overlapping line graph
 
-younger_group <- calls_per_interval_variables %>% 
-  filter(age_group == "Younger")
-senior_group <- calls_per_interval_variables %>% 
-  filter(age_group == "Senior")
-
-ggplot() + 
-  geom_line(data = younger_group, aes(x = unit_notified_time, y = count, color = "red")) + 
-  geom_line(data = senior_group, aes(x = unit_notified_time, y = count, color = "blue")) +
-  geom_point(data = younger_group, aes(x = unit_notified_time, y = count, color = "red")) +
-  geom_point(data = senior_group, aes(x = unit_notified_time, y = count, color = "blue")) +
+ggplot(calls_per_interval_variables, aes(x = unit_notified_time, y = count, .group = age_group, color = age_group)) + 
+  geom_line(size = 1, linetype = "dashed") + 
+  geom_point(size = 2) +
+  scale_y_continuous(limits = c(0,70)) +
   labs(
     title = "Calls per interval using:  unit_notified_by_dispatch_datetime",
     subtitle = "Count Time Series",
@@ -131,5 +125,10 @@ ggplot() +
     color = "Age Groups"
   ) +
   theme_bw() +
+  geom_text(
+    aes(label = count, 
+        color = age_group),
+    vjust = -1,
+    size = 5
+  ) +
   geom_vline(xintercept = c(28800, 28800 * 2), linetype = "dashed")
-
