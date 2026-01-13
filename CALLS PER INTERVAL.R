@@ -72,8 +72,11 @@ ggplot(calls_per_interval_unique_hour, aes(x = unit_notified_time, y = n, color 
 #   summarise(sum = sum(n))
 
 
-# Faceted by age_group ----------------------------------------------------
 
+
+# Visualizing Calls Per Interval with Age Groups --------------------------
+
+# Faceting by age_group [NA IS OMITED]
 calls_per_interval_variables <- time_df %>% 
   left_join(patient_df, by = "PcrKey") %>% 
   select(PcrKey, unit_notified_by_dispatch_datetime, age_group) %>% 
@@ -91,7 +94,7 @@ calls_per_interval_variables <- time_df %>%
   group_by(unit_notified_time, age_group) %>% 
   mutate(count = n())
 
-ggplot(calls_per_interval_variables, aes(x = unit_notified_time, y = count, color = interval_per_8)) + 
+ggplot(na.omit(calls_per_interval_variables), aes(x = unit_notified_time, y = count, color = interval_per_8)) + 
   geom_line(size = .5, linetype = "dashed") + 
   geom_point(size = 2) +
   scale_y_continuous(limits = c(0,125)) +
@@ -111,9 +114,8 @@ ggplot(calls_per_interval_variables, aes(x = unit_notified_time, y = count, colo
     color = "black"
   )
 
-# Maybe should create an overlapping line graph
-
-ggplot(calls_per_interval_variables, aes(x = unit_notified_time, y = count, .group = age_group, color = age_group)) + 
+# Multiple line graph using .group = age_group [NA IS OMITED]
+ggplot(na.omit(calls_per_interval_variables), aes(x = unit_notified_time, y = count, .group = age_group, color = age_group)) + 
   geom_line(size = 1, linetype = "dashed") + 
   geom_point(size = 2) +
   scale_y_continuous(limits = c(0,70)) +
