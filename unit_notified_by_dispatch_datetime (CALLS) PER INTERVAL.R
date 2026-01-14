@@ -28,7 +28,7 @@ calls_per_interval_unique_minute <- time_df %>%
 #   group_by(interval_per_8) %>%
 #   summarise(total_calls = sum(n))
 
-ggplot(calls_per_interval_unique_minute, aes(x = unit_notified_time, y = n, color = interval_per_8)) + geom_line() + scale_y_continuous(limits = c(0, 5))
+ggplot(calls_per_interval_unique_minute, aes(x = unit_notified_time, y = n, color = interval_per_8)) + geom_line()
 
 # unique hour
 calls_per_interval_unique_hour <- time_df %>% 
@@ -49,7 +49,7 @@ calls_per_interval_unique_hour <- time_df %>%
   )
 
 ggplot(calls_per_interval_unique_hour, aes(x = unit_notified_time, y = n, color = interval_per_8)) + 
-  geom_line(size = .5, linetype = "dashed") + 
+  geom_line(linewidth = 1, linetype = "dashed") + 
   geom_point(size = 2) +
   scale_y_continuous(limits = c(0,125)) +
   labs(
@@ -92,9 +92,9 @@ calls_per_interval_variables <- time_df %>%
   mutate(count = n())
 
 ggplot(na.omit(calls_per_interval_variables), aes(x = unit_notified_time, y = count, color = interval_per_8)) + 
-  geom_line(size = .5, linetype = "dashed") + 
+  geom_line(linewidth = 1, linetype = "dashed") + 
   geom_point(size = 2) +
-  scale_y_continuous(limits = c(0,125)) +
+  scale_y_continuous(limits = c(0,70)) +
   facet_wrap(~as.factor(age_group)) + # Should stack charts in rows instead of having columns tbh.
   labs(
     title = "Calls per interval using:  unit_notified_by_dispatch_datetime",
@@ -113,7 +113,7 @@ ggplot(na.omit(calls_per_interval_variables), aes(x = unit_notified_time, y = co
 
 # Multiple line graph using .group = age_group [NA IS OMITED]
 ggplot(na.omit(calls_per_interval_variables), aes(x = unit_notified_time, y = count, .group = age_group, color = age_group)) + 
-  geom_line(size = 1, linetype = "dashed") + 
+  geom_line(linewidth = 1, linetype = "dashed") +
   geom_point(size = 2) +
   scale_y_continuous(limits = c(0,70)) +
   labs(
