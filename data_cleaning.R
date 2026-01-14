@@ -489,18 +489,18 @@ time_df <- clean_NA %>%
     across(PSAP_call_datetime:unit_back_in_service_datetime, ~ as.POSIXct(fast_strptime(.x, format = "%d%b%Y:%H:%M:%S"))
   ))
 
-# Creating event_length_minutes variable
+# Creating time_resolve_issue variable
 time_df <- time_df %>% 
   mutate(
-    event_length_minutes = as.numeric(difftime(unit_back_in_service_datetime, unit_notified_by_dispatch_datetime, units = "mins")),
-    event_length_minutes = round(event_length_minutes, 2)
+    time_resolve_issue = as.numeric(difftime(unit_back_in_service_datetime, unit_notified_by_dispatch_datetime, units = "mins")),
+    time_resolve_issue = round(time_resolve_issue, 2)
   )
 
 # # Duration option
 # time_df_2 <- time_df %>% 
 #   mutate(
-#     event_length_minutes = difftime(unit_back_in_service_datetime, unit_notified_by_dispatch_datetime, units = "mins"),
-#     event_length_minutes = round(event_length_minutes, 2)
+#     time_resolve_issue = difftime(unit_back_in_service_datetime, unit_notified_by_dispatch_datetime, units = "mins"),
+#     time_resolve_issue = round(time_resolve_issue, 2)
 #   )
 
 
