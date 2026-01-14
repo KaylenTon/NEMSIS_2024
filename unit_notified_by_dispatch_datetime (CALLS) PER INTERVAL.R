@@ -71,9 +71,6 @@ ggplot(calls_per_interval_unique_hour, aes(x = unit_notified_time, y = n, color 
 #   group_by(interval_per_8) %>%
 #   summarise(sum = sum(n))
 
-
-
-
 # Visualizing Calls Per Interval with Age Groups --------------------------
 
 # Faceting by age_group [NA IS OMITED]
