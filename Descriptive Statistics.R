@@ -167,7 +167,7 @@ library(ggplot2)
     labs(
       title = "Patient Ages",
       x = "Years",
-      y = NULL
+      y = "Count"
     ) +
     theme_light()
   
