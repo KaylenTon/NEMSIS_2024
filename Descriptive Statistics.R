@@ -10,7 +10,7 @@ library(ggplot2)
     arrange(desc(proportion)) %>% 
     print(n = nrow(.))
 
-  ggplot(dispatch_reason_table, aes(x = reorder(dispatch_reason, n), y = n, fill = dispatch_reason)) + 
+  ggplot(dispatch_reason_table, aes(x = reorder(dispatch_reason, n), y = n)) + 
     geom_col(show.legend = F) + 
     coord_flip() +
     labs(
