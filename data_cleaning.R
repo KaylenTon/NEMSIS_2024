@@ -32,7 +32,7 @@ unused_data <- data[use_tables] %>%
 # Random sample 1000 ------------------------------------------------------
 
 time_path <- ("C:/Users/Kaylen/OneDrive - University of South Florida/Documents/R PRACTICE/SAS2024CP25/factpcrtime.sas7bdat")
-keys <- read_sas(first_path, col_select = "PcrKey")
+keys <- read_sas(time_path, col_select = "PcrKey")
 
 set.seed(73)
 
@@ -111,6 +111,7 @@ for (i in seq_along(select_paths)) {
   
   rm(temporary)
   gc()
+  print("Iteration complete.")
   
 }
 
@@ -545,5 +546,3 @@ patient_df <- patient_df %>%
   rename(
     patient_age_years = patient_age
   )
-
-
