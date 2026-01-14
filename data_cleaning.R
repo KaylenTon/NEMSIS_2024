@@ -163,6 +163,7 @@ select_data <- use_data %>%
 # Removing NAs ------------------------------------------------------------
 
 to_NA <- c("7701003", "7701001", "7701005", "Not Recorded", "Not Applicable")
+
 clean_NA <- select_data %>% 
   mutate(across(everything(), ~ if_else(.x %in% to_NA, NA, .x)))
 
