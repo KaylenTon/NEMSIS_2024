@@ -24,8 +24,99 @@ use_tables <- c("pub_pcrevents",
                 "factpcrresponsedelay",
                 "factpcrdestinationteam")
 
-use_data <- data[use_tables] %>% 
+unused_data <- data[use_tables] %>% 
   reduce(left_join, by = "PcrKey") %>% 
+  distinct(PcrKey, .keep_all = TRUE)
+
+
+# Random sample 1000 ------------------------------------------------------
+
+time_path <- ("C:/Users/Kaylen/OneDrive - University of South Florida/Documents/R PRACTICE/SAS2024CP25/factpcrtime.sas7bdat")
+keys <- read_sas(first_path, col_select = "PcrKey")
+
+set.seed(73)
+
+sample_keys_1000 <- keys %>% 
+  sample_n(1000)
+
+head(sample_keys_1000)
+
+select_paths <- c("C:/Users/Kaylen/OneDrive - University of South Florida/Documents/R PRACTICE/SAS2024CP25/pub_pcrevents.sas7bdat",
+                  "C:/Users/Kaylen/OneDrive - University of South Florida/Documents/R PRACTICE/SAS2024CP25/pcrpatientracegroup.sas7bdat",
+                  "C:/Users/Kaylen/OneDrive - University of South Florida/Documents/R PRACTICE/SAS2024CP25/factpcrturnarounddelay.sas7bdat",
+                  "C:/Users/Kaylen/OneDrive - University of South Florida/Documents/R PRACTICE/SAS2024CP25/factpcrtime.sas7bdat",
+                  "C:/Users/Kaylen/OneDrive - University of South Florida/Documents/R PRACTICE/SAS2024CP25/factpcrscenedelay.sas7bdat",
+                  "C:/Users/Kaylen/OneDrive - University of South Florida/Documents/R PRACTICE/SAS2024CP25/factpcrresponsedelay.sas7bdat",
+                  "C:/Users/Kaylen/OneDrive - University of South Florida/Documents/R PRACTICE/SAS2024CP25/factpcrdestinationteam.sas7bdat")
+
+select_varaibles <- list(
+  # pub_pcrevents
+  c("PcrKey", 
+    "eDispatch_01", 
+    "eDispatch_02", 
+    "eDisposition_19", 
+    "eDisposition_16", 
+    "eDisposition_21", 
+    "eDisposition_22", 
+    "eDisposition_32", 
+    "eDisposition_27", 
+    "eDisposition_28",
+    "eDisposition_29", 
+    "eDisposition_30", 
+    "eResponse_05", 
+    "eResponse_07", 
+    "eResponse_23", 
+    "ePatient_15", 
+    "ePatient_16", 
+    "eDisposition_17"),
+  # pcrpatientracegroup
+  c("PcrKey", 
+    "ePatient_14"),
+  # factpcrturnarounddelay
+  c("PcrKey", 
+    "eResponse_12"),
+  # factpcrtime
+  c("PcrKey", 
+    "eTimes_01", 
+    "eTimes_03", 
+    "eTimes_05", 
+    "eTimes_06", 
+    "eTimes_07", 
+    "eTimes_09", 
+    "eTimes_11", 
+    "eTimes_12", 
+    "eTimes_13"),
+  # factpcrscenedelay
+  c("PcrKey", 
+    "eResponse_10"),
+  # factpcrresponsedelay
+  c("PcrKey", 
+    "eResponse_09"),
+  # factpcrdestinationteam
+  c("PcrKey", 
+    "eDisposition_25", 
+    "eDisposition_24")
+)
+
+sas_data_list <- list()
+
+for (i in seq_along(select_paths)) {
+  
+  temporary <- read_sas(select_paths[i], col_select = select_varaibles[[i]])
+  
+  DATA <- temporary %>% 
+    semi_join(sample_keys_1000, by = "PcrKey")
+  
+  sas_data_list[[i]] <- DATA
+  
+  rm(temporary)
+  gc()
+  
+}
+
+names(sas_data_list) <- file_path_sans_ext(basename(select_paths))
+
+use_data <- reduce(sas_data_list, left_join, by = "PcrKey") %>% 
   distinct(PcrKey, .keep_all = TRUE)
 
 # Renaming variables ------------------------------------------------------
