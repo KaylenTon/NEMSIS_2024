@@ -4,29 +4,29 @@ library(tools)
 library(purrr)
 library(lubridate)
 
-path <- "~/R PRACTICE/SAS2024CP25"
-
-files <- list.files(
-  path,
-  pattern = "\\.sas7bdat$",
-  full.names = T
-)
-
-data <- lapply(files, read_sas, n_max = 1000)
-
-names(data) <- file_path_sans_ext(basename(files))
-
-use_tables <- c("pub_pcrevents",
-                "pcrpatientracegroup",
-                "factpcrturnarounddelay",
-                "factpcrtime",
-                "factpcrscenedelay",
-                "factpcrresponsedelay",
-                "factpcrdestinationteam")
-
-unused_data <- data[use_tables] %>% 
-  reduce(left_join, by = "PcrKey") %>% 
-  distinct(PcrKey, .keep_all = TRUE)
+# path <- "~/R PRACTICE/SAS2024CP25"
+# 
+# files <- list.files(
+#   path,
+#   pattern = "\\.sas7bdat$",
+#   full.names = T
+# )
+# 
+# data <- lapply(files, read_sas, n_max = 1000)
+# 
+# names(data) <- file_path_sans_ext(basename(files))
+# 
+# use_tables <- c("pub_pcrevents",
+#                 "pcrpatientracegroup",
+#                 "factpcrturnarounddelay",
+#                 "factpcrtime",
+#                 "factpcrscenedelay",
+#                 "factpcrresponsedelay",
+#                 "factpcrdestinationteam")
+# 
+# unused_data <- data[use_tables] %>% 
+#   reduce(left_join, by = "PcrKey") %>% 
+#   distinct(PcrKey, .keep_all = TRUE)
 
 
 # Random sample 1000 ------------------------------------------------------
