@@ -487,10 +487,8 @@ time_df <- clean_NA %>%
   select(PcrKey, PSAP_call_datetime:unit_back_in_service_datetime) %>% 
   mutate(
     across(PSAP_call_datetime:unit_back_in_service_datetime, ~ as.POSIXct(fast_strptime(.x, format = "%d%b%Y:%H:%M:%S"))
-  ))
-
+  )) %>% 
 # Creating time_resolve_issue variable
-time_df <- time_df %>% 
   mutate(
     time_resolve_issue = as.numeric(difftime(unit_back_in_service_datetime, unit_notified_by_dispatch_datetime, units = "mins")),
     time_resolve_issue = round(time_resolve_issue, 2)
@@ -525,10 +523,8 @@ patient_df <- clean_NA %>%
       "2514009" = "Native Hawaiian or Other Pacific Islander",
       "2514011" = "White",
       "2514013" = "Middle Eastern or North African")
-  )
-
+  ) %>% 
 # Standardizing age units all to years. If anyone is below 12 months of age, whether in months, days, hours, or minutes, they're 0 years old. If a baby is in between 12 and 24 months, they're one. I also grouped them into age groups: 64 and below are "Younger" and 65 and above are "Senior"
-patient_df <- patient_df %>% 
   mutate(
     patient_age = case_when(
       patient_age_units == "Years"  ~ patient_age,
@@ -545,4 +541,19 @@ patient_df <- patient_df %>%
   ) %>% 
   rename(
     patient_age_years = patient_age
+  ) %>% 
+  mutate(
+    age_decade_group = case_when(
+      patient_age_years >= 0 & patient_age_years < 10 ~ "0-9",
+      patient_age_years >= 10 & patient_age_years < 20 ~ "10-19",
+      patient_age_years >= 20 & patient_age_years < 30 ~ "20-29",
+      patient_age_years >= 30 & patient_age_years < 40 ~ "30-39",
+      patient_age_years >= 40 & patient_age_years < 50 ~ "40-49",
+      patient_age_years >= 50 & patient_age_years < 60 ~ "50-59",
+      patient_age_years >= 60 & patient_age_years < 70 ~ "60-69",
+      patient_age_years >= 70 & patient_age_years < 80 ~ "70-79",
+      patient_age_years >= 80 & patient_age_years < 90 ~ "80-89",
+      patient_age_years >= 90 & patient_age_years < 100 ~ "90-99",
+      patient_age_years >= 100 ~ "100+"
+    )
   )
