@@ -256,4 +256,4 @@ frequency_tables <- bind_rows(
 ) %>% 
   select(table, variable, value, n, proportion)
 
-write.csv(frequency_tables, "frequency_tables.csv")
+write.csv(frequency_tables, "frequency_tables.csv", row.names = F)
