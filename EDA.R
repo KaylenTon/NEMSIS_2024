@@ -31,7 +31,8 @@ focus_data <- from_event %>%
 
 # After filtering, there are 656 observations. 
 
-# Count time series + dispatch reason + age groups ------------------------
+
+# count per dispatch reason faceted by age group --------------------------
 
 top_10_dispatch_reasons <- c("Sick Person",
                              "Transfer/Interfacility/Palliative Care",
@@ -81,4 +82,75 @@ ggplot(na.omit(reason_per_age_group_and_hour), aes(x = unit_notified_time, y = c
     aes(label = count),
     position = position_stack(vjust = .5),
     color = "white"
+  )
+
+
+
+# time resolved per dispatch reason faceted by age group ------------------
+
+  # Top 10 dispatch reasons
+
+  time_per_age_group_and_reason <- focus_data %>% 
+    select(PcrKey, dispatch_reason, age_group, time_resolve_issue) %>% 
+    filter(dispatch_reason %in% top_10_dispatch_reasons) %>% 
+    group_by(dispatch_reason, age_group) %>% 
+    summarise(avg_time = mean(time_resolve_issue), .groups = "drop") %>% 
+    mutate(avg_time = round(avg_time)) %>% 
+    arrange(desc(avg_time))
+  
+  ggplot(na.omit(time_per_age_group_and_reason), aes(x = dispatch_reason, y = avg_time, .group = dispatch_reason, fill = dispatch_reason)) + 
+    geom_col(position = "dodge", show.legend = F) + 
+    scale_fill_brewer(palette = "Paired") +
+    coord_flip() +
+    facet_wrap(~age_group) +
+    theme_light() +
+    theme(legend.position = "bottom") +
+    labs(
+      title = "Average Time Per Dispatch Reason",
+      subtitle = "418 observations",
+      x = NULL,
+      y = "Minutes"
+    ) +
+    geom_text(
+      aes(label = avg_time),
+      hjust = 1.5,
+      color = "white"
+    )
+
+  # ALL dispatch reasons
+
+  time_per_age_group_and_reason <- focus_data %>% 
+    select(PcrKey, dispatch_reason, age_group, time_resolve_issue) %>% 
+    #filter(dispatch_reason %in% top_10_dispatch_reasons) %>% 
+    group_by(dispatch_reason, age_group) %>% 
+    summarise(avg_time = mean(time_resolve_issue), .groups = "drop") %>% 
+    mutate(avg_time = round(avg_time)) %>% 
+    arrange(desc(avg_time))
+  
+  ggplot(na.omit(time_per_age_group_and_reason), aes(x = dispatch_reason, y = avg_time, .group = dispatch_reason, fill = dispatch_reason)) + 
+    geom_col(position = "dodge", show.legend = F) + 
+    #scale_fill_brewer(palette = "Paired") +
+    coord_flip() +
+    facet_wrap(~age_group) +
+    theme_light() +
+    theme(legend.position = "bottom") +
+    labs(
+      title = "Average Time Per Dispatch Reason",
+      subtitle = "564 observations",
+      x = NULL,
+      y = "Minutes"
+    ) +
+    geom_text(
+      aes(label = avg_time),
+      hjust = 1.5,
+      color = "white"
+    )
+
+avg_time_by_reason_age <- focus_data %>%
+  filter(age_group %in% c("Senior", "Younger")) %>%
+  group_by(dispatch_reason, age_group) %>%
+  summarise(
+    avg_time_resolve = mean(time_resolve_issue, na.rm = TRUE),
+    n = sum(!is.na(time_resolve_issue)),
+    .groups = "drop"
   )
