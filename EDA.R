@@ -226,3 +226,5 @@ younger <- focus_data %>%
 
 summary(younger$time_resolve_issue)
 ggplot(younger, aes(x = time_resolve_issue)) + geom_histogram()
+
+# do anova for other 2+ categorical groupings
