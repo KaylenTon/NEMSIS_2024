@@ -49,7 +49,7 @@ select_paths <- c("C:/Users/Kaylen/OneDrive - University of South Florida/Docume
                   "C:/Users/Kaylen/OneDrive - University of South Florida/Documents/R PRACTICE/SAS2024CP25/factpcrresponsedelay.sas7bdat",
                   "C:/Users/Kaylen/OneDrive - University of South Florida/Documents/R PRACTICE/SAS2024CP25/factpcrdestinationteam.sas7bdat")
 
-select_varaibles <- list(
+select_variables <- list(
   # pub_pcrevents
   c("PcrKey", 
     "eDispatch_01", 
