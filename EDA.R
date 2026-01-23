@@ -69,6 +69,7 @@ ggplot(na.omit(test), aes(x = unit_notified_time, y = count, .group = dispatch_r
   scale_y_continuous(limits = c(0,15), n.breaks = 5) +
   facet_wrap(~age_group) +
   theme_light() +
+  theme(legend.position = "bottom") +
   labs(
     title = "Top 10 Dispacth Reasons At Each Hour",
     subtitle = "418 observations",
