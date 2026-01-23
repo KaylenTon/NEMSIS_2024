@@ -26,7 +26,27 @@ focus_data <- from_event %>%
   ) %>% 
   select(-c(type_of_service_requested, response_mode_to_scene))
 
+# After filtering, there are 656 observations. 
 
 # Count time series + dispatch reason + age groups ------------------------
 
+test <- focus_data %>% 
+  select(PcrKey, dispatch_reason, unit_notified_by_dispatch_datetime) %>% 
+  mutate(unit_notified_time = as_hms(round_date(unit_notified_by_dispatch_datetime, "hour"))) %>% 
+  group_by(unit_notified_time) %>% 
+  mutate(
+    count = n()
+  )
+  #   %>%
+  # mutate(
+  #   hour = hour(unit_notified_time),
+  #   interval_per_8 = hour %/% 8,
+  #   interval_per_8 = case_when(
+  #     interval_per_8 == 0 ~ "00:00:00 - 07:59:00", #00:00:00 - 07:59:00
+  #     interval_per_8 == 1 ~ "08:00:00 - 15:59:00", #08:00:00 - 15:59:00
+  #     interval_per_8 == 2 ~ "16:00:00 - 23:59:00", #16:00:00 - 23:59:00
+  #   )
+  # )
 
+ggplot(test, aes(x = unit_notified_time, y = count, .group = dispatch_reason, fill = dispatch_reason)) + geom_col(position = "stack")
+  
