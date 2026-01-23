@@ -38,12 +38,12 @@ top_10_dispatch_reasons <- c("Sick Person",
                              "Transfer/Interfacility/Palliative Care",
                              "Breathing Problem",
                              "Falls",
-                             "No Other Appropriate Choice",
                              "Chest Pain (Non-Traumatic)",
                              "Traffic/Transportation Incident",
                              "Unconscious/Fainting/Near-Fainting",
                              "Unknown Problem/Person Down",
-                             "Psychiatric Problem/Abnormal Behavior/Suicide Attempt")
+                             "Psychiatric Problem/Abnormal Behavior/Suicide Attempt",
+                             "Convulsions/Seizure")
 
 reason_per_age_group_and_hour <- focus_data %>% 
   select(PcrKey, dispatch_reason, unit_notified_by_dispatch_datetime, age_group) %>% 
@@ -63,7 +63,11 @@ reason_per_age_group_and_hour <- focus_data %>%
   #   )
   # )
 
-ggplot(na.omit(reason_per_age_group_and_hour), aes(x = unit_notified_time, y = count, .group = dispatch_reason, fill = dispatch_reason)) + 
+ggplot(na.omit(reason_per_age_group_and_hour), 
+       aes(x = unit_notified_time, 
+           y = count, 
+           .group = dispatch_reason, 
+           fill = dispatch_reason)) + 
   geom_vline(xintercept = c(28800, 28800 * 2), linetype = "dashed", color = "black", linewidth = 1) +
   geom_col(position = "stack") +
   scale_fill_brewer(palette = "Paired") +
@@ -76,7 +80,7 @@ ggplot(na.omit(reason_per_age_group_and_hour), aes(x = unit_notified_time, y = c
     subtitle = "418 observations",
     x = "Time",
     y = "Count",
-    fill = "Dispacth Reason"
+    fill = NULL
   ) +
   geom_text(
     aes(label = count),
@@ -94,11 +98,15 @@ ggplot(na.omit(reason_per_age_group_and_hour), aes(x = unit_notified_time, y = c
     select(PcrKey, dispatch_reason, age_group, time_resolve_issue) %>% 
     filter(dispatch_reason %in% top_10_dispatch_reasons) %>% 
     group_by(dispatch_reason, age_group) %>% 
-    summarize(avg_time = mean(time_resolve_issue), .groups = "drop") %>% 
+    summarize(avg_time = mean(time_resolve_issue, , na.rm = TRUE), .groups = "drop") %>% 
     mutate(avg_time = round(avg_time)) %>% 
     arrange(desc(avg_time))
   
-  ggplot(na.omit(time_per_age_group_and_10_reasons), aes(x = dispatch_reason, y = avg_time, .group = dispatch_reason, fill = dispatch_reason)) + 
+  ggplot(na.omit(time_per_age_group_and_10_reasons), 
+         aes(x = dispatch_reason, 
+             y = avg_time, 
+             .group = dispatch_reason, 
+             fill = dispatch_reason)) + 
     geom_col(show.legend = F) + 
     scale_fill_brewer(palette = "Paired") +
     coord_flip() +
@@ -123,11 +131,15 @@ ggplot(na.omit(reason_per_age_group_and_hour), aes(x = unit_notified_time, y = c
     select(PcrKey, dispatch_reason, age_group, time_resolve_issue) %>% 
     #filter(dispatch_reason %in% top_10_dispatch_reasons) %>% 
     group_by(dispatch_reason, age_group) %>% 
-    summarize(avg_time = mean(time_resolve_issue), .groups = "drop") %>% 
+    summarize(avg_time = mean(time_resolve_issue, , na.rm = TRUE), .groups = "drop") %>% 
     mutate(avg_time = round(avg_time)) %>% 
     arrange(desc(avg_time))
   
-  ggplot(na.omit(time_per_age_group_and_all_reasons), aes(x = dispatch_reason, y = avg_time, .group = dispatch_reason, fill = dispatch_reason)) + 
+  ggplot(na.omit(time_per_age_group_and_all_reasons), 
+         aes(x = dispatch_reason, 
+             y = avg_time, 
+             .group = dispatch_reason, 
+             fill = dispatch_reason)) + 
     geom_col(show.legend = F) + 
     #scale_fill_brewer(palette = "Paired") +
     coord_flip() +
@@ -161,3 +173,43 @@ ggplot(na.omit(reason_per_age_group_and_hour), aes(x = unit_notified_time, y = c
 #   ) %>%
 #   summarize(avg_time_resolve = mean(time_resolve_issue, na.rm = TRUE)) %>%
 #   pull()
+  
+  # Time series of avg_time per dispatch reason
+  
+  time_per_age_group_and_10_reasons_through_time <- focus_data %>% 
+    select(PcrKey, dispatch_reason, age_group, unit_notified_by_dispatch_datetime, time_resolve_issue) %>% 
+    filter(dispatch_reason %in% top_10_dispatch_reasons) %>% 
+    mutate(unit_notified_time = as_hms(round_date(unit_notified_by_dispatch_datetime, "hour"))) %>% 
+    group_by(unit_notified_time, dispatch_reason, age_group) %>% 
+    summarize(avg_time = mean(time_resolve_issue, na.rm = TRUE), .groups = "drop") %>% 
+    mutate(avg_time = round(avg_time)) %>% 
+    arrange(desc(avg_time))
+  
+  ggplot(na.omit(time_per_age_group_and_10_reasons_through_time), 
+         aes(x = unit_notified_time, 
+             y = avg_time, 
+             .group = dispatch_reason, 
+             color = dispatch_reason)) + 
+    geom_line(linewidth = 1.25, alpha = .5) +
+    geom_point(size = 2) +
+    facet_wrap(~age_group) +
+    theme_bw() +
+    theme(legend.position = "bottom") +
+    geom_vline(xintercept = c(28800, 28800 * 2), linetype = "dashed") +
+    labs(
+      title = "The Average Time to Conclude PCR per Top 10 Dispatch Reason Throughout the Day",
+      x = "Time",
+      y = "Minutes",
+      color = NULL
+    ) +
+    geom_text(
+      aes(label = avg_time),
+      vjust = -1,
+      size = 3
+    )
+  
+  # Includes an extreme outlier. PCR # 310894504 (senior and sick @ 21:00:00) lasted 25 hours.
+
+# statistical tests -------------------------------------------------------
+
+
