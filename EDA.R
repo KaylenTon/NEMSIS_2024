@@ -212,4 +212,17 @@ ggplot(na.omit(reason_per_age_group_and_hour),
 
 # statistical tests -------------------------------------------------------
 
+t.test(data = na.omit(focus_data), time_resolve_issue ~ age_group) 
+  # Need to decide what to do with outliers then decide additional arguments of t-tests.
+  
+senior <- focus_data %>% 
+  filter(age_group == "Senior")
 
+summary(senior$time_resolve_issue)
+ggplot(senior, aes(x = time_resolve_issue)) + geom_histogram()
+
+younger <- focus_data %>% 
+  filter(age_group == "Younger")
+
+summary(younger$time_resolve_issue)
+ggplot(younger, aes(x = time_resolve_issue)) + geom_histogram()
