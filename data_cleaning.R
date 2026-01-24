@@ -584,3 +584,4 @@ patient_df <- clean_NA %>%
   )
 
 # which(duplicated(patient_df$PcrKey))
+# save.image(file = "cleaningDataFileObjects.RData")
