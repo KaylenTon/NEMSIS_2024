@@ -12,7 +12,9 @@ library(lubridate)
 #   full.names = T
 # )
 # 
-# data <- lapply(files, read_sas, n_max = 1000)
+# system.time(
+#   data <- lapply(files, read_sas, n_max = 5)
+# )
 # 
 # names(data) <- file_path_sans_ext(basename(files))
 # 
@@ -24,24 +26,29 @@ library(lubridate)
 #                 "factpcrresponsedelay",
 #                 "factpcrdestinationteam")
 # 
-# unused_data <- data[use_tables] %>% 
-#   reduce(left_join, by = "PcrKey") %>% 
+# unused_data <- data[use_tables] %>%
+#   reduce(left_join, by = "PcrKey") %>%
 #   distinct(PcrKey, .keep_all = TRUE)
 
 
-# Random sample 1000 ------------------------------------------------------
+# Random sample 1% --------------------------------------------------------
 
 time_path <- ("C:/Users/Kaylen/OneDrive - University of South Florida/Documents/R PRACTICE/SAS2024CP25/factpcrtime.sas7bdat")
-keys <- read_sas(time_path, col_select = "PcrKey")
+system.time(
+  keys <- read_sas(time_path, col_select = "PcrKey")
+  )
 
 set.seed(73)
 
-sample_keys_1000 <- keys %>% 
-  sample_n(1000)
+system.time(
+  sample_keys_one_percent <- keys %>% 
+    slice_sample(prop = .01)
+  )
 
-head(sample_keys_1000)
+head(sample_keys_one_percent)
 
-select_paths <- c("C:/Users/Kaylen/OneDrive - University of South Florida/Documents/R PRACTICE/SAS2024CP25/pub_pcrevents.sas7bdat",
+select_paths <- c("C:/Users/Kaylen/OneDrive - University of South Florida/Documents/R PRACTICE/SAS2024CP25/computedelements.sas7bdat",
+                  "C:/Users/Kaylen/OneDrive - University of South Florida/Documents/R PRACTICE/SAS2024CP25/pub_pcrevents.sas7bdat",
                   "C:/Users/Kaylen/OneDrive - University of South Florida/Documents/R PRACTICE/SAS2024CP25/pcrpatientracegroup.sas7bdat",
                   "C:/Users/Kaylen/OneDrive - University of South Florida/Documents/R PRACTICE/SAS2024CP25/factpcrturnarounddelay.sas7bdat",
                   "C:/Users/Kaylen/OneDrive - University of South Florida/Documents/R PRACTICE/SAS2024CP25/factpcrtime.sas7bdat",
@@ -50,6 +57,15 @@ select_paths <- c("C:/Users/Kaylen/OneDrive - University of South Florida/Docume
                   "C:/Users/Kaylen/OneDrive - University of South Florida/Documents/R PRACTICE/SAS2024CP25/factpcrdestinationteam.sas7bdat")
 
 select_variables <- list(
+  # computedelements
+  c("PcrKey",
+    "USCensusRegion",
+    "USCensusDivision",
+    "NasemsoRegion",
+    "Urbanicity",
+    "ageinyear",
+    "EMSTransportTimeMin",
+    "EMSTotalCallTimeMin"),
   # pub_pcrevents
   c("PcrKey", 
     "eDispatch_01", 
@@ -102,16 +118,22 @@ sas_data_list <- list()
 
 for (i in seq_along(select_paths)) {
   
-  temporary <- read_sas(select_paths[i], col_select = select_varaibles[[i]])
+  interation_time <- system.time({
+    
+    temporary <- read_sas(select_paths[i], col_select = select_variables[[i]])
+    
+    DATA <- temporary %>% 
+      semi_join(sample_keys_one_percent, by = "PcrKey")
+    
+    sas_data_list[[i]] <- DATA
+    
+    rm(temporary)
+    gc()
   
-  DATA <- temporary %>% 
-    semi_join(sample_keys_1000, by = "PcrKey")
+  })
   
-  sas_data_list[[i]] <- DATA
-  
-  rm(temporary)
-  gc()
-  print("Iteration complete.")
+  print(paste("Iteration", i, "complete"))
+  print(interation_time)
   
 }
 
