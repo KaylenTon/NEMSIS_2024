@@ -71,7 +71,7 @@ ggplot(na.omit(reason_per_age_group_and_hour),
   geom_vline(xintercept = c(28800, 28800 * 2), linetype = "dashed", color = "black", linewidth = 1) +
   geom_col(position = "stack") +
   scale_fill_brewer(palette = "Paired") +
-  scale_y_continuous(limits = c(0,15), n.breaks = 5) +
+  #scale_y_continuous(limits = c(0,15), n.breaks = 5) +
   facet_wrap(~age_group) +
   theme_light() +
   theme(legend.position = "bottom") +
@@ -168,8 +168,8 @@ ggplot(na.omit(reason_per_age_group_and_hour),
 # 
 # focus_data %>%
 #   filter(
-#     age_group == "Younger",
-#     dispatch_reason == "Altered Mental Status"
+#     age_group == "Senior",
+#     dispatch_reason == "Pregnancy/Childbirth/Miscarriage"
 #   ) %>%
 #   summarize(avg_time_resolve = mean(time_resolve_issue, na.rm = TRUE)) %>%
 #   pull()
