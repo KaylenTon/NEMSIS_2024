@@ -582,3 +582,5 @@ patient_df <- clean_NA %>%
       patient_age_years >= 100 ~ "100+"
     )
   )
+
+# which(duplicated(patient_df$PcrKey))
