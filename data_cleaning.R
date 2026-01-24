@@ -139,7 +139,8 @@ for (i in seq_along(select_paths)) {
 
 names(sas_data_list) <- file_path_sans_ext(basename(select_paths))
 
-use_data <- reduce(sas_data_list, left_join, by = "PcrKey")
+use_data <- reduce(sas_data_list, left_join, by = "PcrKey") %>% 
+  distinct(PcrKey, .keep_all = TRUE)
 
 # Selecting/reordering variables ------------------------------------------
 
@@ -581,7 +582,15 @@ patient_df <- clean_NA %>%
       patient_age_years >= 90 & patient_age_years < 100 ~ "90-99",
       patient_age_years >= 100 ~ "100+"
     )
-  )
+  ) %>% 
+  mutate(
+    patient_age_years = case_when(
+      is.na(patient_age_years) ~ ageinyear,
+      patient_age_years > ageinyear ~ patient_age_years, # So that 12 month babies are 1 years old.
+      TRUE ~ ageinyear
+    )
+  ) %>% 
+  select(-ageinyear)
 
-# which(duplicated(patient_df$PcrKey))
+
 # save.image(file = "cleaningDataFileObjects.RData")
