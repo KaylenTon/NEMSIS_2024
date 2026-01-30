@@ -592,5 +592,6 @@ patient_df <- clean_NA %>%
   ) %>% 
   select(-ageinyear)
 
-
 # save.image(file = "cleaningDataFileObjects.RData")
+
+rm(clean_NA, sample_keys_one_percent, sas_data_list, select_data, use_data)
