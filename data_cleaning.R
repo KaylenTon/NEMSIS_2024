@@ -159,11 +159,15 @@ to_NA <- c("7701003", "7701001", "7701005", "Not Recorded", "Not Applicable", ""
 clean_NA <- select_data %>% 
   mutate(across(everything(), ~ if_else(.x %in% to_NA, NA, .x)))
 
+# Location table ----------------------------------------------------------
+
+location_df <- clean_NA %>% 
+  select(PcrKey:Urbanicity)
 
 # Event table -------------------------------------------------------------
 
 event_df <- clean_NA %>% 
-  select(PcrKey:Urbanicity, eDispatch_01:eResponse_09) %>% 
+  select(PcrKey, eDispatch_01:eResponse_09) %>% 
   rename(
     dispatch_reason = eDispatch_01,
     EMD_performed = eDispatch_02,
