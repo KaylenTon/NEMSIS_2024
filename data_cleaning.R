@@ -599,12 +599,9 @@ patient_df <- clean_NA %>%
   ) %>% 
   select(-ageinyear)
 
-<<<<<<< HEAD
   levels(patient_df$age_group) <- c("Younger", "Senior")
   levels(patient_df$age_decade_group) <- c("0-4", "5-9", "10-14", "15-19", "20-24", "25-29", "30-34", "35-39", "40-44", "45-49", "50-54", "55-59", "60-64", "65-69", "70-74", "75-79", "80-84", "85+")
 
-=======
->>>>>>> 58dec6763fa816c0fc39f177c3f8d95e26120ab0
 # save.image(file = "cleaningDataFileObjects.RData")
 
 rm(clean_NA, sample_keys_one_percent, sas_data_list, select_data, use_data)
