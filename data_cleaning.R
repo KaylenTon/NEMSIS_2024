@@ -563,25 +563,32 @@ patient_df <- clean_NA %>%
   ) %>% 
   select(-patient_age_units) %>% 
   mutate(
-    age_group = ifelse(patient_age >= 65, "Senior", "Younger")
-  ) %>% 
+    age_group = as.factor(ifelse(patient_age >= 65, "Senior", "Younger")
+  )) %>% 
   rename(
     patient_age_years = patient_age
   ) %>% 
   mutate(
-    age_decade_group = case_when(
-      patient_age_years >= 0 & patient_age_years < 10 ~ "0-9",
-      patient_age_years >= 10 & patient_age_years < 20 ~ "10-19",
-      patient_age_years >= 20 & patient_age_years < 30 ~ "20-29",
-      patient_age_years >= 30 & patient_age_years < 40 ~ "30-39",
-      patient_age_years >= 40 & patient_age_years < 50 ~ "40-49",
-      patient_age_years >= 50 & patient_age_years < 60 ~ "50-59",
-      patient_age_years >= 60 & patient_age_years < 70 ~ "60-69",
-      patient_age_years >= 70 & patient_age_years < 80 ~ "70-79",
-      patient_age_years >= 80 & patient_age_years < 90 ~ "80-89",
-      patient_age_years >= 90 & patient_age_years < 100 ~ "90-99",
-      patient_age_years >= 100 ~ "100+"
-    )
+    age_decade_group = as.factor(case_when(
+      patient_age_years >= 0 & patient_age_years < 5 ~ "0-4",
+      patient_age_years >= 5 & patient_age_years < 10 ~ "5-9",
+      patient_age_years >= 10 & patient_age_years < 15 ~ "10-14",
+      patient_age_years >= 15 & patient_age_years < 20 ~ "15-19",
+      patient_age_years >= 20 & patient_age_years < 25 ~ "20-24",
+      patient_age_years >= 25 & patient_age_years < 30 ~ "25-29",
+      patient_age_years >= 30 & patient_age_years < 35 ~ "30-34",
+      patient_age_years >= 35 & patient_age_years < 40 ~ "35-39",
+      patient_age_years >= 40 & patient_age_years < 45 ~ "40-44",
+      patient_age_years >= 45 & patient_age_years < 50 ~ "45-49",
+      patient_age_years >= 50 & patient_age_years < 55 ~ "50-54",
+      patient_age_years >= 55 & patient_age_years < 60 ~ "55-59",
+      patient_age_years >= 60 & patient_age_years < 65 ~ "60-64",
+      patient_age_years >= 65 & patient_age_years < 70 ~ "65-69",
+      patient_age_years >= 70 & patient_age_years < 75 ~ "70-74",
+      patient_age_years >= 75 & patient_age_years < 80 ~ "75-79",
+      patient_age_years >= 80 & patient_age_years < 85 ~ "80-84",
+      patient_age_years >= 85 ~ "85+"
+    ))
   ) %>% 
   mutate(
     patient_age_years = case_when(
@@ -592,5 +599,7 @@ patient_df <- clean_NA %>%
   ) %>% 
   select(-ageinyear)
 
+  levels(patient_df$age_group) <- c("Younger", "Senior")
+  levels(patient_df$age_decade_group) <- c("0-4", "5-9", "10-14", "15-19", "20-24", "25-29", "30-34", "35-39", "40-44", "45-49", "50-54", "55-59", "60-64", "65-69", "70-74", "75-79", "80-84", "85+")
 
 # save.image(file = "cleaningDataFileObjects.RData")
