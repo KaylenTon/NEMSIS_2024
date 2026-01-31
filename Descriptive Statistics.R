@@ -3,6 +3,46 @@ library(ggplot2)
 
 # Event variables ----------------------------------------------------------------
 
+z <- event_df %>% 
+  count(USCensusRegion) %>% 
+  mutate(
+    proportion = n / sum(n),
+    table = "event_df",
+    variable = "USCensusRegion"
+  ) %>%
+  arrange(desc(n)) %>% 
+  rename(value = USCensusRegion)
+
+y <- event_df %>% 
+  count(USCensusDivision) %>% 
+  mutate(
+    proportion = n / sum(n),
+    table = "event_df",
+    variable = "USCensusDivision"
+  ) %>%
+  arrange(desc(n)) %>% 
+  rename(value = USCensusDivision)
+
+x <- event_df %>% 
+  count(NasemsoRegion) %>% 
+  mutate(
+    proportion = n / sum(n),
+    table = "event_df",
+    variable = "NasemsoRegion"
+  ) %>%
+  arrange(desc(n)) %>% 
+  rename(value = NasemsoRegion)
+
+w <- event_df %>% 
+  count(Urbanicity) %>% 
+  mutate(
+    proportion = n / sum(n),
+    table = "event_df",
+    variable = "Urbanicity"
+  ) %>%
+  arrange(desc(n)) %>% 
+  rename(value = Urbanicity)
+
 a <- event_df %>%
   count(dispatch_reason) %>%
   mutate(
