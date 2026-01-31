@@ -33,7 +33,7 @@ x <- event_df %>%
   arrange(desc(n)) %>% 
   rename(value = NasemsoRegion)
 
-w <- event_df %>% 
+m <- event_df %>% 
   count(Urbanicity) %>% 
   mutate(
     proportion = n / sum(n),
@@ -292,7 +292,7 @@ summary(time_df$time_resolve_issue)
 # combine tables ----------------------------------------------------------
 
 frequency_tables <- bind_rows(
-  a, b, c, d, e, f, g, h, i, j, k, l, n, o, p, q, r, s, t, u, v, w
+  z, y, x, m, a, b, c, d, e, f, g, h, i, j, k, l, n, o, p, q, r, s, t, u, v, w
 ) %>% 
   select(table, variable, value, n, proportion)
 
