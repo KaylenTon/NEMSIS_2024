@@ -7,7 +7,7 @@ display.brewer.all()
 
 # RQ: Is there a significant difference between the younger and older age groups regarding:
 #       1. dispatch_reason
-#       2. time_resolve_issue
+#       2. EMSTotalCallTimeMin
 
 # Getting the data --------------------------------------------------------
 
@@ -15,7 +15,7 @@ from_event <- event_df %>%
   select(PcrKey, dispatch_reason, EMD_performed, level_of_care_provided_per_protocol, transport_mode_from_scene, response_mode_to_scene, type_of_service_requested, unit_transport_and_equipment_capability)
 
 from_time <- time_df %>% 
-  select(PcrKey, unit_notified_by_dispatch_datetime, time_resolve_issue)
+  select(PcrKey, unit_notified_by_dispatch_datetime, EMSTotalCallTimeMin)
 
 from_patient <- patient_df %>% 
   select(-patient_race)
@@ -77,7 +77,6 @@ ggplot(na.omit(reason_per_age_group_and_hour),
   theme(legend.position = "bottom") +
   labs(
     title = "Top 10 Dispacth Reasons At Each Hour",
-    subtitle = "418 observations",
     x = "Time",
     y = "Count",
     fill = NULL
@@ -92,96 +91,14 @@ ggplot(na.omit(reason_per_age_group_and_hour),
 
 # time resolved per dispatch reason faceted by age group ------------------
 
-  # Top 10 dispatch reasons
-
-  time_per_age_group_and_10_reasons <- focus_data %>% 
-    select(PcrKey, dispatch_reason, age_group, time_resolve_issue) %>% 
-    filter(dispatch_reason %in% top_10_dispatch_reasons) %>% 
-    group_by(dispatch_reason, age_group) %>% 
-    summarize(avg_time = mean(time_resolve_issue, , na.rm = TRUE), .groups = "drop") %>% 
-    mutate(avg_time = round(avg_time)) %>% 
-    arrange(desc(avg_time))
-  
-  ggplot(na.omit(time_per_age_group_and_10_reasons), 
-         aes(x = dispatch_reason, 
-             y = avg_time, 
-             .group = dispatch_reason, 
-             fill = dispatch_reason)) + 
-    geom_col(show.legend = F) + 
-    scale_fill_brewer(palette = "Paired") +
-    coord_flip() +
-    facet_wrap(~age_group) +
-    theme_light() +
-    theme(legend.position = "bottom") +
-    labs(
-      title = "Average Time Per Per Top 10 Dispatch Reason",
-      subtitle = "418 observations",
-      x = NULL,
-      y = "Minutes"
-    ) +
-    geom_text(
-      aes(label = avg_time),
-      hjust = 1.5,
-      color = "white"
-    )
-
-  # ALL dispatch reasons
-
-  time_per_age_group_and_all_reasons <- focus_data %>% 
-    select(PcrKey, dispatch_reason, age_group, time_resolve_issue) %>% 
-    #filter(dispatch_reason %in% top_10_dispatch_reasons) %>% 
-    group_by(dispatch_reason, age_group) %>% 
-    summarize(avg_time = mean(time_resolve_issue, , na.rm = TRUE), .groups = "drop") %>% 
-    mutate(avg_time = round(avg_time)) %>% 
-    arrange(desc(avg_time))
-  
-  ggplot(na.omit(time_per_age_group_and_all_reasons), 
-         aes(x = dispatch_reason, 
-             y = avg_time, 
-             .group = dispatch_reason, 
-             fill = dispatch_reason)) + 
-    geom_col(show.legend = F) + 
-    #scale_fill_brewer(palette = "Paired") +
-    coord_flip() +
-    facet_wrap(~age_group) +
-    theme_light() +
-    theme(legend.position = "bottom") +
-    labs(
-      title = "Average Time Per Dispatch Reason",
-      subtitle = "564 observations",
-      x = NULL,
-      y = "Minutes"
-    ) +
-    geom_text(
-      aes(label = avg_time),
-      hjust = 1.5,
-      color = "white"
-    )
-
-# avg_time_by_reason_age <- focus_data %>%
-#   filter(age_group %in% c("Senior", "Younger")) %>%
-#   group_by(dispatch_reason, age_group) %>%
-#   summarize(
-#     avg_time_resolve = mean(time_resolve_issue),
-#     .groups = "drop"
-#   )
-# 
-# focus_data %>%
-#   filter(
-#     age_group == "Senior",
-#     dispatch_reason == "Pregnancy/Childbirth/Miscarriage"
-#   ) %>%
-#   summarize(avg_time_resolve = mean(time_resolve_issue, na.rm = TRUE)) %>%
-#   pull()
-  
   # Time series of avg_time per dispatch reason
   
   time_per_age_group_and_10_reasons_through_time <- focus_data %>% 
-    select(PcrKey, dispatch_reason, age_group, unit_notified_by_dispatch_datetime, time_resolve_issue) %>% 
+    select(PcrKey, dispatch_reason, age_group, unit_notified_by_dispatch_datetime, EMSTotalCallTimeMin) %>% 
     filter(dispatch_reason %in% top_10_dispatch_reasons) %>% 
     mutate(unit_notified_time = as_hms(round_date(unit_notified_by_dispatch_datetime, "hour"))) %>% 
     group_by(unit_notified_time, dispatch_reason, age_group) %>% 
-    summarize(avg_time = mean(time_resolve_issue, na.rm = TRUE), .groups = "drop") %>% 
+    summarize(avg_time = mean(EMSTotalCallTimeMin, na.rm = TRUE), .groups = "drop") %>% 
     mutate(avg_time = round(avg_time)) %>% 
     arrange(desc(avg_time))
   
@@ -208,23 +125,58 @@ ggplot(na.omit(reason_per_age_group_and_hour),
       size = 3
     )
   
-  # Includes an extreme outlier. PCR # 310894504 (senior and sick @ 21:00:00) lasted 25 hours.
+    # Includes an extreme outlier. PCR # 310894504 (senior and sick @ 21:00:00) lasted 25 hours.
+  
+  # avg_time per dispatch reason BOX AND WHISKER PLOTS
+  
+  time_per_dispatch_boxplot <- focus_data %>% 
+    select(PcrKey, dispatch_reason, age_group, EMSTotalCallTimeMin) %>% 
+    filter(dispatch_reason %in% top_10_dispatch_reasons) %>% 
+    group_by(dispatch_reason)
+  
+  time_per_dispatch_boxplot  %>% 
+    summarise(
+      n = n(),
+      Mean = mean(EMSTotalCallTimeMin, na.rm = TRUE),
+      Median = median(EMSTotalCallTimeMin, na.rm = TRUE),
+      Sd = sd(EMSTotalCallTimeMin, na.rm = TRUE),
+      Q1 = quantile(EMSTotalCallTimeMin, 0.25, na.rm = TRUE),
+      Q3 = quantile(EMSTotalCallTimeMin, 0.75, na.rm = TRUE),
+      Min = min(EMSTotalCallTimeMin, na.rm = TRUE),
+      Max = max(EMSTotalCallTimeMin, na.rm = TRUE)
+    ) %>%
+    arrange(desc(Median)) %>% 
+    print(n = Inf)
+  
+  ggplot(na.omit(time_per_dispatch_boxplot), aes(x = dispatch_reason, y = EMSTotalCallTimeMin, fill = age_group)) +
+    geom_boxplot(outlier.shape = 3, outlier.size = 2) +
+    scale_fill_brewer(palette = "Set1") +
+    coord_cartesian(ylim = c(0, 300)) +
+    coord_flip() +
+    scale_y_continuous(limits = c(0, 250), n.breaks = 15) +
+    labs(
+      title = "Box & Whisker Plot : Time Per Dispatch Reason",
+      subtitle = "Some events were took 'negative minutes' -> NA & removed \nMinute values go up to 1433",
+      x = NULL,
+      y = "Minutes",
+      fill = "Age group"
+    )
 
 # statistical tests -------------------------------------------------------
 
-t.test(data = na.omit(focus_data), time_resolve_issue ~ age_group) 
+t.test(data = na.omit(focus_data), EMSTotalCallTimeMin ~ age_group) 
   # Need to decide what to do with outliers then decide additional arguments of t-tests.
   
 senior <- focus_data %>% 
   filter(age_group == "Senior")
 
-summary(senior$time_resolve_issue)
-ggplot(senior, aes(x = time_resolve_issue)) + geom_histogram()
+summary(senior$EMSTotalCallTimeMin)
+ggplot(senior, aes(x = EMSTotalCallTimeMin)) + geom_histogram()
 
 younger <- focus_data %>% 
   filter(age_group == "Younger")
 
-summary(younger$time_resolve_issue)
-ggplot(younger, aes(x = time_resolve_issue)) + geom_histogram()
+summary(younger$EMSTotalCallTimeMin)
+ggplot(younger, aes(x = EMSTotalCallTimeMin)) + geom_histogram()
 
 # do anova for other 2+ categorical groupings
