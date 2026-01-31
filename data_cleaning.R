@@ -139,6 +139,11 @@ for (i in seq_along(select_paths)) {
 
 names(sas_data_list) <- file_path_sans_ext(basename(select_paths))
 
+
+
+
+# Start here to retrieve dfs after .RData ---------------------------------
+
 use_data <- reduce(sas_data_list, left_join, by = "PcrKey") %>% 
   distinct(PcrKey, .keep_all = TRUE)
 
@@ -509,7 +514,7 @@ time_df <- clean_NA %>%
   mutate(
     across(PSAP_call_datetime:unit_back_in_service_datetime, ~ as.POSIXct(fast_strptime(.x, format = "%d%b%Y:%H:%M:%S"))
   )) %>% 
-# Creating time_resolve_issue variable
+# Creating time_resolve_issue variable [upate: maybe we should delete this made variable]
   mutate(
     time_resolve_issue = as.numeric(difftime(unit_back_in_service_datetime, unit_notified_by_dispatch_datetime, units = "mins")),
     time_resolve_issue = round(time_resolve_issue, 2)
@@ -605,3 +610,4 @@ patient_df <- clean_NA %>%
 # save.image(file = "cleaningDataFileObjects.RData")
 
 rm(clean_NA, sample_keys_one_percent, sas_data_list, select_data, use_data)
+
