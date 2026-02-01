@@ -518,7 +518,7 @@ time_df <- clean_NA %>%
   mutate(
     across(PSAP_call_datetime:unit_back_in_service_datetime, ~ as.POSIXct(fast_strptime(.x, format = "%d%b%Y:%H:%M:%S"))
   )) %>% 
-# Creating time_resolve_issue variable [upate: maybe we should delete this made variable]
+# Creating time_resolve_issue variable [update: maybe we should delete this made variable]
   mutate(
     time_resolve_issue = as.numeric(difftime(unit_back_in_service_datetime, unit_notified_by_dispatch_datetime, units = "mins")),
     time_resolve_issue = round(time_resolve_issue, 2)
