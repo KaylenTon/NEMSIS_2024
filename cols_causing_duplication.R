@@ -37,3 +37,16 @@ ggplot(frequency_tbl, aes(x = diff_cols, y = n)) +
  coord_flip() +
   labs(title = "Frequency of Cols Causing PcrKey Duplication") +
   theme_minimal()
+
+## GET COLUMNS CAUSING DUPLICATES ONLY
+dupe_cols <- c("PcrKey", frequency_tbl$diff_cols) #just get the names of the duplicate columns
+dupe_cols_only <- duplicates[, (colnames(duplicates) %in% dupe_cols)] #subset the duplicates table with the names from "dupe_cols"
+
+dupe_cols_only <- dupe_cols_only %>%
+  left_join(dupe_cols_df %>% #join this to the dupe_cols_only df
+              select(PcrKey, diff_cols)%>% #get just the PcrKey col and "diff_col" row
+              distinct(PcrKey, .keep_all = TRUE), by = "PcrKey") %>% #select only the distinct PcrKey values (remove duplicates and just keep the reasons)
+  filter(diff_cols != "")
+
+write.csv(dupe_cols_only, "rowcols_only_of_pcrkey_dupes.csv", row.names = FALSE)
+write.csv(frequency_tbl, "pcrkey_dupes_frequency_tbl.csv", row.names = FALSE)
