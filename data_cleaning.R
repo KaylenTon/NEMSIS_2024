@@ -152,16 +152,20 @@ select_data <- use_data %>%
 
 # Removing NAs ------------------------------------------------------------
 
-to_NA <- c("7701003", "7701001", "7701005", "Not Recorded", "Not Applicable")
+to_NA <- c("7701003", "7701001", "7701005", "Not Recorded", "Not Applicable", "")
 
 clean_NA <- select_data %>% 
   mutate(across(everything(), ~ if_else(.x %in% to_NA, NA, .x)))
 
+# Location table ----------------------------------------------------------
+
+location_df <- clean_NA %>% 
+  select(PcrKey:Urbanicity)
 
 # Event table -------------------------------------------------------------
 
 event_df <- clean_NA %>% 
-  select(PcrKey:Urbanicity, eDispatch_01:eResponse_09) %>% 
+  select(PcrKey, eDispatch_01:eResponse_09) %>% 
   rename(
     dispatch_reason = eDispatch_01,
     EMD_performed = eDispatch_02,
@@ -512,7 +516,7 @@ time_df <- clean_NA %>%
   mutate(
     across(PSAP_call_datetime:unit_back_in_service_datetime, ~ as.POSIXct(fast_strptime(.x, format = "%d%b%Y:%H:%M:%S"))
   )) %>% 
-# Creating time_resolve_issue variable
+# Creating time_resolve_issue variable [update: maybe we should delete this made variable]
   mutate(
     time_resolve_issue = as.numeric(difftime(unit_back_in_service_datetime, unit_notified_by_dispatch_datetime, units = "mins")),
     time_resolve_issue = round(time_resolve_issue, 2)
@@ -608,3 +612,4 @@ patient_df <- clean_NA %>%
 # save.image(file = "cleaningDataFileObjects.RData")
 
 rm(clean_NA, sample_keys_one_percent, sas_data_list, select_data, use_data)
+

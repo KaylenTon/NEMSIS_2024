@@ -131,8 +131,7 @@ ggplot(na.omit(reason_per_age_group_and_hour),
   
   time_per_dispatch_boxplot <- focus_data %>% 
     select(PcrKey, dispatch_reason, age_group, EMSTotalCallTimeMin) %>% 
-    filter(dispatch_reason %in% top_10_dispatch_reasons) %>% 
-    #filter(dispatch_reason %in% top_10_dispatch_reasons) %>% 
+    #filter(dispatch_reason %in% top_10_dispatch_reasons) %>%
     group_by(dispatch_reason)
   
   time_per_dispatch_boxplot  %>% 

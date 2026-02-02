@@ -3,6 +3,46 @@ library(ggplot2)
 
 # Event variables ----------------------------------------------------------------
 
+z <- event_df %>% 
+  count(USCensusRegion) %>% 
+  mutate(
+    proportion = n / sum(n),
+    table = "event_df",
+    variable = "USCensusRegion"
+  ) %>%
+  arrange(desc(n)) %>% 
+  rename(value = USCensusRegion)
+
+y <- event_df %>% 
+  count(USCensusDivision) %>% 
+  mutate(
+    proportion = n / sum(n),
+    table = "event_df",
+    variable = "USCensusDivision"
+  ) %>%
+  arrange(desc(n)) %>% 
+  rename(value = USCensusDivision)
+
+x <- event_df %>% 
+  count(NasemsoRegion) %>% 
+  mutate(
+    proportion = n / sum(n),
+    table = "event_df",
+    variable = "NasemsoRegion"
+  ) %>%
+  arrange(desc(n)) %>% 
+  rename(value = NasemsoRegion)
+
+m <- event_df %>% 
+  count(Urbanicity) %>% 
+  mutate(
+    proportion = n / sum(n),
+    table = "event_df",
+    variable = "Urbanicity"
+  ) %>%
+  arrange(desc(n)) %>% 
+  rename(value = Urbanicity)
+
 a <- event_df %>%
   count(dispatch_reason) %>%
   mutate(
@@ -252,7 +292,7 @@ summary(time_df$time_resolve_issue)
 # combine tables ----------------------------------------------------------
 
 frequency_tables <- bind_rows(
-  a, b, c, d, e, f, g, h, i, j, k, l, n, o, p, q, r, s, t, u, v, w
+  z, y, x, m, a, b, c, d, e, f, g, h, i, j, k, l, n, o, p, q, r, s, t, u, v, w
 ) %>% 
   select(table, variable, value, n, proportion)
 
