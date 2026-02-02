@@ -48,5 +48,5 @@ dupe_cols_only <- dupe_cols_only %>%
               distinct(PcrKey, .keep_all = TRUE), by = "PcrKey") %>% #select only the distinct PcrKey values (remove duplicates and just keep the reasons)
   filter(diff_cols != "")
 
-write.csv(dupe_cols_only, "rowcols_only_of_pcrkey_dupes.csv", row.names = FALSE)
-write.csv(frequency_tbl, "pcrkey_dupes_frequency_tbl.csv", row.names = FALSE)
+#write.csv(dupe_cols_only, "rowcols_only_of_pcrkey_dupes.csv", row.names = FALSE)
+#write.csv(frequency_tbl, "pcrkey_dupes_frequency_tbl.csv", row.names = FALSE)
