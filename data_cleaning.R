@@ -139,11 +139,12 @@ for (i in seq_along(select_paths)) {
 
 names(sas_data_list) <- file_path_sans_ext(basename(select_paths))
 
-# use_data <- reduce(sas_data_list, left_join, by = "PcrKey") %>% 
-#   distinct(PcrKey, .keep_all = TRUE)
+use_data <- reduce(sas_data_list, left_join, by = "PcrKey") %>% 
+   distinct(PcrKey, .keep_all = TRUE)
 
+#keep pcrkey duplicates
+use_data <- reduce(sas_data_list, left_join, by = "PcrKey")
 
-use_data <- reduce(sas_data_list, left_join, by = "PcrKey") #this takes in duplicated PcrKey values. Remove this line if not needed
 
 # Selecting/reordering variables ------------------------------------------
 
