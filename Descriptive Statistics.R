@@ -3,41 +3,41 @@ library(ggplot2)
 
 # Event variables ----------------------------------------------------------------
 
-z <- event_df %>% 
+z <- location_df %>% 
   count(USCensusRegion) %>% 
   mutate(
     proportion = n / sum(n),
-    table = "event_df",
+    table = "location_df",
     variable = "USCensusRegion"
   ) %>%
   arrange(desc(n)) %>% 
   rename(value = USCensusRegion)
 
-y <- event_df %>% 
+y <- location_df %>% 
   count(USCensusDivision) %>% 
   mutate(
     proportion = n / sum(n),
-    table = "event_df",
+    table = "location_df",
     variable = "USCensusDivision"
   ) %>%
   arrange(desc(n)) %>% 
   rename(value = USCensusDivision)
 
-x <- event_df %>% 
+x <- location_df %>% 
   count(NasemsoRegion) %>% 
   mutate(
     proportion = n / sum(n),
-    table = "event_df",
+    table = "location_df",
     variable = "NasemsoRegion"
   ) %>%
   arrange(desc(n)) %>% 
   rename(value = NasemsoRegion)
 
-m <- event_df %>% 
+m <- location_df %>% 
   count(Urbanicity) %>% 
   mutate(
     proportion = n / sum(n),
-    table = "event_df",
+    table = "location_df",
     variable = "Urbanicity"
   ) %>%
   arrange(desc(n)) %>% 
@@ -51,7 +51,8 @@ a <- event_df %>%
     variable = "dispatch_reason"
   ) %>%
   arrange(desc(n)) %>% 
-  rename(value = dispatch_reason)
+  rename(value = dispatch_reason) %>% 
+  print(n = Inf)
 
 b <- event_df %>%
   count(EMD_performed) %>%
@@ -277,16 +278,16 @@ summary(time_df$time_resolve_issue)
     arrange(desc(n)) %>% 
     rename(value = age_group)
   
-  # age_decade_group
+  # age_interval_group
   w <- patient_df %>%
-    count(age_decade_group) %>%
+    count(age_interval_group) %>%
     mutate(
       proportion = n / sum(n),
       table = "patient_df",
-      variable = "age_decade_group"
+      variable = "age_interval_group"
     ) %>%
     arrange(desc(n)) %>% 
-    rename(value = age_decade_group)
+    rename(value = age_interval_group)
 
 
 # combine tables ----------------------------------------------------------

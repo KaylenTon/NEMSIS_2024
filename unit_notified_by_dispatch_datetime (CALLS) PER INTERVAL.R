@@ -51,7 +51,7 @@ calls_per_interval_unique_hour <- time_df %>%
 ggplot(calls_per_interval_unique_hour, aes(x = unit_notified_time, y = n, color = interval_per_8)) + 
   geom_line(linewidth = 1, linetype = "dashed") + 
   geom_point(size = 2) +
-  scale_y_continuous(limits = c(0,125)) +
+  # scale_y_continuous(limits = c(0,125)) +
   labs(
     title = "Calls per interval using:  unit_notified_by_dispatch_datetime",
     subtitle = "Count Time Series",
@@ -94,7 +94,7 @@ calls_per_interval_variables <- time_df %>%
 ggplot(na.omit(calls_per_interval_variables), aes(x = unit_notified_time, y = count, color = interval_per_8)) + 
   geom_line(linewidth = 1, linetype = "dashed") + 
   geom_point(size = 2) +
-  scale_y_continuous(limits = c(0,70)) +
+  # scale_y_continuous(limits = c(0,70)) +
   facet_wrap(~as.factor(age_group)) + # Should stack charts in rows instead of having columns tbh.
   labs(
     title = "Calls per interval using:  unit_notified_by_dispatch_datetime",
@@ -115,7 +115,7 @@ ggplot(na.omit(calls_per_interval_variables), aes(x = unit_notified_time, y = co
 ggplot(na.omit(calls_per_interval_variables), aes(x = unit_notified_time, y = count, .group = age_group, color = age_group)) + 
   geom_line(linewidth = 1, linetype = "dashed") +
   geom_point(size = 2) +
-  scale_y_continuous(limits = c(0,70)) +
+  # scale_y_continuous(limits = c(0,70)) +
   labs(
     title = "Calls per interval using:  unit_notified_by_dispatch_datetime",
     subtitle = "Count Time Series",
@@ -131,3 +131,4 @@ ggplot(na.omit(calls_per_interval_variables), aes(x = unit_notified_time, y = co
     size = 5
   ) +
   geom_vline(xintercept = c(28800, 28800 * 2), linetype = "dashed")
+

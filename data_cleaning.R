@@ -139,7 +139,7 @@ for (i in seq_along(select_paths)) {
 
 names(sas_data_list) <- file_path_sans_ext(basename(select_paths))
 
-# use_data <- reduce(sas_data_list, left_join, by = "PcrKey") %>% 
+# use_data <- reduce(sas_data_list, left_join, by = "PcrKey") %>%
 #   distinct(PcrKey, .keep_all = TRUE)
 
 
@@ -155,7 +155,8 @@ select_data <- use_data %>%
 to_NA <- c("7701003", "7701001", "7701005", "Not Recorded", "Not Applicable", "")
 
 clean_NA <- select_data %>% 
-  mutate(across(everything(), ~ if_else(.x %in% to_NA, NA, .x)))
+  mutate(across(everything(), ~ if_else(.x %in% to_NA, NA, .x))) %>% 
+  filter(!is.na(ePatient_15))
 
 # Location table ----------------------------------------------------------
 
@@ -515,12 +516,12 @@ time_df <- clean_NA %>%
   ) %>% 
   mutate(
     across(PSAP_call_datetime:unit_back_in_service_datetime, ~ as.POSIXct(fast_strptime(.x, format = "%d%b%Y:%H:%M:%S"))
-  )) %>% 
-# Creating time_resolve_issue variable [update: maybe we should delete this made variable]
-  mutate(
-    time_resolve_issue = as.numeric(difftime(unit_back_in_service_datetime, unit_notified_by_dispatch_datetime, units = "mins")),
-    time_resolve_issue = round(time_resolve_issue, 2)
-  )
+  ))
+# # Creating time_resolve_issue variable [update: maybe we should delete this made variable]
+#   mutate(
+#     time_resolve_issue = as.numeric(difftime(unit_back_in_service_datetime, unit_notified_by_dispatch_datetime, units = "mins")),
+#     time_resolve_issue = round(time_resolve_issue, 2)
+#   )
 
 # # Duration option
 # time_df_2 <- time_df %>% 
@@ -576,7 +577,7 @@ patient_df <- clean_NA %>%
     patient_age_years = patient_age
   ) %>% 
   mutate(
-    age_decade_group = as.factor(case_when(
+    age_interval_group = as.factor(case_when(
       patient_age_years >= 0 & patient_age_years < 5 ~ "0-4",
       patient_age_years >= 5 & patient_age_years < 10 ~ "5-9",
       patient_age_years >= 10 & patient_age_years < 15 ~ "10-14",
@@ -607,7 +608,7 @@ patient_df <- clean_NA %>%
   select(-ageinyear)
 
   levels(patient_df$age_group) <- c("Younger", "Senior")
-  levels(patient_df$age_decade_group) <- c("0-4", "5-9", "10-14", "15-19", "20-24", "25-29", "30-34", "35-39", "40-44", "45-49", "50-54", "55-59", "60-64", "65-69", "70-74", "75-79", "80-84", "85+")
+  levels(patient_df$age_interval_group) <- c("0-4", "5-9", "10-14", "15-19", "20-24", "25-29", "30-34", "35-39", "40-44", "45-49", "50-54", "55-59", "60-64", "65-69", "70-74", "75-79", "80-84", "85+")
 
 # save.image(file = "cleaningDataFileObjects.RData")
 

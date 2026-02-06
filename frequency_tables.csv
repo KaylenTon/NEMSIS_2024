@@ -1,0 +1,301 @@
+"table","variable","value","n","proportion"
+"location_df","USCensusRegion","South",214150,0.411181684126448
+"location_df","USCensusRegion","West",106572,0.204625049921661
+"location_df","USCensusRegion","Northeast",100338,0.192655371570766
+"location_df","USCensusRegion","Midwest",96277,0.184857992073976
+"location_df","USCensusRegion",NA,3479,0.00667990230714878
+"location_df","USCensusDivision","South Atlantic",125486,0.24094113852109
+"location_df","USCensusDivision","Pacific",75387,0.144747857208688
+"location_df","USCensusDivision","East North Central",68407,0.131345811188596
+"location_df","USCensusDivision","Middle Atlantic",68320,0.13117876562932
+"location_df","USCensusDivision","West South Central",61892,0.118836594881878
+"location_df","USCensusDivision","New England",32018,0.0614766059414457
+"location_df","USCensusDivision","Mountain",31185,0.0598771927129735
+"location_df","USCensusDivision","West North Central",27870,0.0535121808853799
+"location_df","USCensusDivision","East South Central",26772,0.0514039507234801
+"location_df","USCensusDivision",NA,3479,0.00667990230714878
+"location_df","NasemsoRegion","South",197423,0.379064775275721
+"location_df","NasemsoRegion","East",117065,0.224772280421492
+"location_df","NasemsoRegion","West",89976,0.172759669441799
+"location_df","NasemsoRegion","Great Lakes",75062,0.144123836441277
+"location_df","NasemsoRegion","Western Plains",37811,0.0725995361125618
+"location_df","NasemsoRegion",NA,3479,0.00667990230714878
+"location_df","Urbanicity","Urban",435067,0.835356440662345
+"location_df","Urbanicity","Rural",33267,0.0638747657522042
+"location_df","Urbanicity","Suburban",31601,0.0606759392952597
+"location_df","Urbanicity",NA,15075,0.0289449632883782
+"location_df","Urbanicity","Frontier",5806,0.0111478910018125
+"event_df","dispatch_reason","Sick Person",92434,0.177479186507327
+"event_df","dispatch_reason","Transfer/Interfacility/Palliative Care",76051,0.146022779638106
+"event_df","dispatch_reason","Falls",46093,0.0885015053300974
+"event_df","dispatch_reason","No Other Appropriate Choice",40998,0.0787187797609904
+"event_df","dispatch_reason","Breathing Problem",40894,0.0785190931154189
+"event_df","dispatch_reason","Chest Pain (Non-Traumatic)",26426,0.0507396086141747
+"event_df","dispatch_reason","Traffic/Transportation Incident",26221,0.0503459955147307
+"event_df","dispatch_reason","Unconscious/Fainting/Near-Fainting",21950,0.0421454025989985
+"event_df","dispatch_reason","Abdominal Pain/Problems",15826,0.0303869312770729
+"event_df","dispatch_reason","Psychiatric Problem/Abnormal Behavior/Suicide Attempt",15655,0.0300586003502197
+"event_df","dispatch_reason","Unknown Problem/Person Down",14636,0.0281020552363983
+"event_df","dispatch_reason","Convulsions/Seizure",13271,0.0254811680132715
+"event_df","dispatch_reason","Traumatic Injury",12846,0.0246651408558877
+"event_df","dispatch_reason","Stroke/CVA",9560,0.0183558108813861
+"event_df","dispatch_reason","Hemorrhage/Laceration",7946,0.0152568277472274
+"event_df","dispatch_reason","Overdose/Poisoning/Ingestion",7269,0.0139569444871125
+"event_df","dispatch_reason","Cardiac Arrest/Death",6615,0.0127012226966913
+"event_df","dispatch_reason","Diabetic Problem",6208,0.0119197566895026
+"event_df","dispatch_reason","Heart Problems/AICD",6126,0.011762311449725
+"event_df","dispatch_reason","Assault",5399,0.0103664249946238
+"event_df","dispatch_reason","Back Pain (Non-Traumatic)",4759,0.00913758409879881
+"event_df","dispatch_reason","Altered Mental Status",3240,0.00622100703511413
+"event_df","dispatch_reason","Allergic Reaction/Stings",2976,0.00571411016558631
+"event_df","dispatch_reason","Headache",2257,0.0043335842216829
+"event_df","dispatch_reason","Pregnancy/Childbirth/Miscarriage",2190,0.00420493994040122
+"event_df","dispatch_reason","Medical Alarm",2054,0.0039438112500384
+"event_df","dispatch_reason","Well Person Check",1732,0.00332555067432644
+"event_df","dispatch_reason","Stab/Gunshot Wound/Penetrating Trauma",1600,0.00307210223956253
+"event_df","dispatch_reason","Choking",1204,0.00231175693527081
+"event_df","dispatch_reason","Heat/Cold Exposure",790,0.001516850480784
+"event_df","dispatch_reason","Animal Bite",748,0.00143620779699548
+"event_df","dispatch_reason","Airmedical Transport",712,0.00136708549660533
+"event_df","dispatch_reason","Healthcare Professional/Admission",613,0.0011769991705324
+"event_df","dispatch_reason","Burns/Explosion",544,0.00104451476145126
+"event_df","dispatch_reason","Vomiting",515,0.00098883290835919
+"event_df","dispatch_reason","Eye Problem/Injury",495,0.000950431630364659
+"event_df","dispatch_reason","Nausea",374,0.000718103898497742
+"event_df","dispatch_reason","Standby",356,0.000683542748302664
+"event_df","dispatch_reason","Fire",301,0.000577939233817701
+"event_df","dispatch_reason","Carbon Monoxide/Hazmat/Inhalation/CBRN",245,0.000470415655433013
+"event_df","dispatch_reason","Automated Crash Notification",215,0.000412813738441215
+"event_df","dispatch_reason","Industrial Accident/Inaccessible Incident/Other Entrapments (Non-Vehicle)",178,0.000341771374151332
+"event_df","dispatch_reason","Drowning/Diving/SCUBA Accident",120,0.00023040766796719
+"event_df","dispatch_reason","Electrocution/Lightning",65,0.000124804153482228
+"event_df","dispatch_reason","Pandemic/Epidemic/Outbreak",61,0.000117123897883322
+"event_df","dispatch_reason","Intercept",48,9.2163067186876e-05
+"event_df","EMD_performed",NA,248385,0.476915071733587
+"event_df","EMD_performed","No",111412,0.213918159196338
+"event_df","EMD_performed","Yes, With Pre-Arrival Instructions",79647,0.152927329421523
+"event_df","EMD_performed","Yes, Unknown if Pre-Arrival Instructions Given",75265,0.144513609412921
+"event_df","EMD_performed","Yes, Without Pre-Arrival Instructions",6107,0.0117258302356302
+"event_df","acuity_upon_EMS_release_of_patient","Lower Acuity (Green)",269094,0.516677675033025
+"event_df","acuity_upon_EMS_release_of_patient",NA,171791,0.329849697397929
+"event_df","acuity_upon_EMS_release_of_patient","Emergent (Yellow)",67563,0.129725277257227
+"event_df","acuity_upon_EMS_release_of_patient","Critical (Red)",9717,0.0186572609136432
+"event_df","acuity_upon_EMS_release_of_patient","Dead without Resuscitation Efforts (Black)",2651,0.00509008939817517
+"event_df","EMS_transport_method","Ground-Ambulance",403675,0.775081794722128
+"event_df","EMS_transport_method",NA,111695,0.214461537279961
+"event_df","EMS_transport_method","Air Medical-Rotor Craft",3136,0.00602132038954256
+"event_df","EMS_transport_method","Ground-Other Not Listed",1097,0.00210631009800006
+"event_df","EMS_transport_method","Air Medical-Fixed Wing",550,0.00105603514484962
+"event_df","EMS_transport_method","Ground-Bariatric",255,0.000489616294430279
+"event_df","EMS_transport_method","Ground-ATV or Rescue Vehicle",223,0.000428174249639028
+"event_df","EMS_transport_method","Ground-Wheelchair Van",161,0.00030913028785598
+"event_df","EMS_transport_method","Ground-Mass Casualty Bus/Vehicle",19,3.64812140948051e-05
+"event_df","EMS_transport_method","Water-Boat",5,9.60031949863291e-06
+"event_df","type_of_destination","Hospital-Emergency Department",301868,0.579605849282664
+"event_df","type_of_destination",NA,103329,0.198398282694848
+"event_df","type_of_destination","Hospital-Non-Emergency Department Bed",43656,0.0838223096064637
+"event_df","type_of_destination","4221011",22097,0.0424276519922583
+"event_df","type_of_destination","Home",17244,0.0331095818868852
+"event_df","type_of_destination","Morgue/Mortuary",15330,0.0294345795828085
+"event_df","type_of_destination","Other",6889,0.0132273202052164
+"event_df","type_of_destination","Clinic",5856,0.0112438941967989
+"event_df","type_of_destination","Other EMS Responder (ground)",1866,0.0035828392368898
+"event_df","type_of_destination","Freestanding Emergency Department",1693,0.0032506681822371
+"event_df","type_of_destination","Other EMS Responder (air)",766,0.00147076894719056
+"event_df","type_of_destination","Police/Jail",116,0.000222727412368284
+"event_df","type_of_destination","Urgent Care",106,0.000203526773371018
+"event_df","hospital_in_patient_destination",NA,452852,0.869504777118983
+"event_df","hospital_in_patient_destination","Hospital-Other",52469,0.100743832754754
+"event_df","hospital_in_patient_destination","Hospital-Med/Surg",5582,0.0107177966882738
+"event_df","hospital_in_patient_destination","Hospital-Mental Health",1813,0.00348107585020429
+"event_df","hospital_in_patient_destination","Hospital-ICU",1744,0.00334859144112316
+"event_df","hospital_in_patient_destination","Hospital-Peds (General)",1068,0.00205062824490799
+"event_df","hospital_in_patient_destination","Hospital-Labor and Delivery",729,0.00139972658290068
+"event_df","hospital_in_patient_destination","Hospital-Rehab",721,0.00138436607170287
+"event_df","hospital_in_patient_destination","Hospital-CCU",588,0.00112899757303923
+"event_df","hospital_in_patient_destination","Hospital-Out-Patient Bed",441,0.000846748179779423
+"event_df","hospital_in_patient_destination","Hospital-MICU",405,0.000777625879389266
+"event_df","hospital_in_patient_destination","Hospital-Cath Lab",339,0.000650901662007312
+"event_df","hospital_in_patient_destination","Hospital-Peds ICU",301,0.000577939233817701
+"event_df","hospital_in_patient_destination","Hospital-NICU",280,0.000537617891923443
+"event_df","hospital_in_patient_destination","Hospital-Radiology Services - CT/PET",269,0.000516497189026451
+"event_df","hospital_in_patient_destination","Hospital-Oncology",173,0.000332171054652699
+"event_df","hospital_in_patient_destination","Hospital-Orthopedic",158,0.0003033700961568
+"event_df","hospital_in_patient_destination","Hospital-Radiation",146,0.000280329329360081
+"event_df","hospital_in_patient_destination","Hospital-OR",134,0.000257288562563362
+"event_df","hospital_in_patient_destination","Hospital-Hospice",119,0.000228487604067463
+"event_df","hospital_in_patient_destination","Hospital-Burn",100,0.000192006389972658
+"event_df","hospital_in_patient_destination","Hospital-Radiology Services - MRI",94,0.000180486006574299
+"event_df","hospital_in_patient_destination","Hospital-Endoscopy",71,0.000136324536880587
+"event_df","hospital_in_patient_destination","Hospital-Outpatient Surgery",69,0.000132484409081134
+"event_df","hospital_in_patient_destination","Hospital-SICU",59,0.000113283770083868
+"event_df","hospital_in_patient_destination","Hospital-Radiology Services - X-Ray",50,9.60031949863291e-05
+"event_df","hospital_in_patient_destination","Hospital-Nursery",22,4.22414057939848e-05
+"event_df","hospital_in_patient_destination","Hospital-Hyperbaric Oxygen Treatment",20,3.84012779945317e-05
+"event_df","level_of_care_provided_per_protocol","ALS - Paramedic",193112,0.370787379804
+"event_df","level_of_care_provided_per_protocol","BLS - All Levels",155749,0.299048032318516
+"event_df","level_of_care_provided_per_protocol",NA,138916,0.266727596694418
+"event_df","level_of_care_provided_per_protocol","ALS - AEMT/Intermediate",13172,0.0252910816871986
+"event_df","level_of_care_provided_per_protocol","No Care Provided",11524,0.0221268163804491
+"event_df","level_of_care_provided_per_protocol","Critical Care",6731,0.0129239501090596
+"event_df","level_of_care_provided_per_protocol","Integrated Health Care",867,0.00166469540106295
+"event_df","level_of_care_provided_per_protocol","EMS and Other Health-Care Staff",745,0.0014304476052963
+"event_df","unit_disposition","Patient Contact Made",514893,0.988627461521919
+"event_df","unit_disposition","Non-Patient Incident (Not Otherwise Listed)",2200,0.00422414057939848
+"event_df","unit_disposition","No Patient Contact",1738,0.0033370710577248
+"event_df","unit_disposition","Cancelled on Scene",1052,0.00201990722251237
+"event_df","unit_disposition","Cancelled Prior to Arrival at Scene",553,0.0010617953365488
+"event_df","unit_disposition","No Patient Found",380,0.000729624281896102
+"event_df","patient_evaluation_care","Patient Evaluated and Care Provided",453850,0.87142100089091
+"event_df","patient_evaluation_care","Patient Evaluated and Refused Care",24000,0.046081533593438
+"event_df","patient_evaluation_care","Patient Refused Evaluation/Care",14323,0.0275010752357838
+"event_df","patient_evaluation_care","Patient Evaluated, No Care Required",11328,0.0217504838561027
+"event_df","patient_evaluation_care","Patient Support Services Provided",9116,0.0175033025099075
+"event_df","patient_evaluation_care",NA,8199,0.0157426039138583
+"event_df","crew_disposition","Initiated and Continued Primary Care",408745,0.784816518693742
+"event_df","crew_disposition","Back in Service, Care/Support Services Refused",35304,0.0677859359159473
+"event_df","crew_disposition","Initiated Primary Care and Transferred to Another EMS Crew",30018,0.0576364781419926
+"event_df","crew_disposition","Assumed Primary Care from Another EMS Crew",14933,0.0286723142146171
+"event_df","crew_disposition","Back in Service, No Care/Support Services Required",13361,0.0256539737642469
+"event_df","crew_disposition","Provided Care Supporting Primary EMS Crew",9284,0.0178258732450616
+"event_df","crew_disposition",NA,6049,0.0116144665294461
+"event_df","crew_disposition","Incident Support Services Provided (Including Standby)",3122,0.00599443949494639
+"event_df","transport_disposition","Transport by This EMS Unit (This Crew Only)",382850,0.735096464010322
+"event_df","transport_disposition","Patient Refused Transport",45091,0.0865776013025713
+"event_df","transport_disposition","No Transport",35377,0.0679261005806273
+"event_df","transport_disposition","Transport by Another EMS Unit/Agency",33296,0.0639304476052963
+"event_df","transport_disposition",NA,9787,0.0187916653866241
+"event_df","transport_disposition","Transport by This EMS Unit, with a Member of Another Crew",6657,0.0127818653804799
+"event_df","transport_disposition","Transport by Another EMS Unit/Agency, with a Member of This Crew",5767,0.0110730085097232
+"event_df","transport_disposition","Non-Patient Transport (Not Otherwise Listed)",1991,0.00382284722435563
+"event_df","transport_mode_from_scene","Non-Emergent",287774,0.552544468679918
+"event_df","transport_mode_from_scene",NA,120123,0.230643835826856
+"event_df","transport_mode_from_scene","Emergent (Immediate Response)",107195,0.205821249731191
+"event_df","transport_mode_from_scene","Emergent Downgraded to Non-Emergent",3393,0.0065147768117723
+"event_df","transport_mode_from_scene","Non-Emergent Upgraded to Emergent",2331,0.00447566895026266
+"event_df","desination_team_prearrival_alert_or_activation",NA,273953,0.526007265521797
+"event_df","desination_team_prearrival_alert_or_activation","No",224005,0.430103913858253
+"event_df","desination_team_prearrival_alert_or_activation","Yes-Other",11897,0.0228430002150472
+"event_df","desination_team_prearrival_alert_or_activation","Yes-Stroke",3354,0.00643989431968296
+"event_df","desination_team_prearrival_alert_or_activation","Yes-Adult Trauma",3150,0.00604820128413874
+"event_df","desination_team_prearrival_alert_or_activation","Yes-Trauma (General)",1535,0.0029472980860803
+"event_df","desination_team_prearrival_alert_or_activation","Yes-Sepsis",1057,0.002029507542011
+"event_df","desination_team_prearrival_alert_or_activation","Yes-STEMI",834,0.00160133329237197
+"event_df","desination_team_prearrival_alert_or_activation","Yes-Cardiac Arrest",690,0.00132484409081134
+"event_df","desination_team_prearrival_alert_or_activation","Yes-Pediatric Trauma",233,0.000447374888636294
+"event_df","desination_team_prearrival_alert_or_activation","Yes-Obstetrics",108,0.000207366901170471
+"event_df","type_of_service_requested","Emergency Response (Primary Response Area)",392487,0.753600119811987
+"event_df","type_of_service_requested","Hospital-to-Hospital Transfer",53564,0.102846302724955
+"event_df","type_of_service_requested","Other Routine Medical Transport",43986,0.0844559306933735
+"event_df","type_of_service_requested","Hospital to Non-Hospital Facility Transfer",14069,0.0270133790052533
+"event_df","type_of_service_requested","Public Assistance",4902,0.00941215323645971
+"event_df","type_of_service_requested","Non-Hospital Facility to Non-Hospital Facility Transfer",3352,0.00643605419188351
+"event_df","type_of_service_requested","Non-Hospital Facility to Hospital Transfer",2365,0.00454095112285337
+"event_df","type_of_service_requested","Emergency Response (Mutual Aid)",2364,0.00453903105895364
+"event_df","type_of_service_requested","Emergency Response (Intercept)",1900,0.00364812140948051
+"event_df","type_of_service_requested","Standby",647,0.0012422813431231
+"event_df","type_of_service_requested","Crew Transport Only",473,0.000908190224570674
+"event_df","type_of_service_requested","Support Services",368,0.000706583515099383
+"event_df","type_of_service_requested","Mobile Integrated Health Care Encounter",209,0.000401293355042856
+"event_df","type_of_service_requested","Evaluation for Special Referral/Intake Programs",68,0.000130564345181408
+"event_df","type_of_service_requested","Administrative Operations",23,4.41614696937114e-05
+"event_df","type_of_service_requested","Mortuary Services",17,3.26410862953519e-05
+"event_df","type_of_service_requested","Non-Patient Care Rescue/Extrication",13,2.49608306964456e-05
+"event_df","type_of_service_requested","Transport of Organs or Body Parts",9,1.72805750975392e-05
+"event_df","unit_transport_and_equipment_capability","Ground Transport (ALS Equipped)",294957,0.566336287671654
+"event_df","unit_transport_and_equipment_capability","Ground Transport (BLS Equipped)",153839,0.295380710270038
+"event_df","unit_transport_and_equipment_capability","Non-Transport-Medical Treatment (BLS Equipped)",29930,0.0574675125188166
+"event_df","unit_transport_and_equipment_capability","Non-Transport-Medical Treatment (ALS Equipped)",24563,0.0471625295689841
+"event_df","unit_transport_and_equipment_capability","Ground Transport (Critical Care Equipped)",12458,0.0239201560627938
+"event_df","unit_transport_and_equipment_capability","Air Transport-Helicopter",3009,0.00577747227427729
+"event_df","unit_transport_and_equipment_capability","Wheel Chair Van/Ambulette",1174,0.00225415501827901
+"event_df","unit_transport_and_equipment_capability","Air Transport-Fixed Wing",571,0.00109635648674388
+"event_df","unit_transport_and_equipment_capability","Non-Transport-No Medical Equipment",315,0.000604820128413874
+"event_df","response_mode_to_scene","Emergent (Immediate Response)",364730,0.700304906147277
+"event_df","response_mode_to_scene","Non-Emergent",150297,0.288579843937206
+"event_df","response_mode_to_scene","Emergent Downgraded to Non-Emergent",4220,0.00810266965684618
+"event_df","response_mode_to_scene","Non-Emergent Upgraded to Emergent",1569,0.00301258025867101
+"event_df","type_of_turn_around_delay","None/No Delay",326329,0.626572532333876
+"event_df","type_of_turn_around_delay",NA,171260,0.328830143467175
+"event_df","type_of_turn_around_delay","ED Overcrowding / Transfer of Care",8372,0.016074774968511
+"event_df","type_of_turn_around_delay","Clean-up",5296,0.010168658412952
+"event_df","type_of_turn_around_delay","Documentation",2631,0.00505168812018064
+"event_df","type_of_turn_around_delay","Staff Delay",2230,0.00428174249639028
+"event_df","type_of_turn_around_delay","Decontamination",1572,0.00301834045037019
+"event_df","type_of_turn_around_delay","Other",1224,0.00235015821326534
+"event_df","type_of_turn_around_delay","Distance",1141,0.00219079290958803
+"event_df","type_of_turn_around_delay","Equipment/Supply Replenishment",262,0.000503056741728365
+"event_df","type_of_turn_around_delay","EMS Crew Accompanies Patient for Facility Procedure",238,0.000456975208134927
+"event_df","type_of_turn_around_delay","Traffic",115,0.000220807348468557
+"event_df","type_of_turn_around_delay","Weather",59,0.000113283770083868
+"event_df","type_of_turn_around_delay","Equipment Failure",53,0.000101763386685509
+"event_df","type_of_turn_around_delay","Route Obstruction (e.g., Train)",12,2.3040766796719e-05
+"event_df","type_of_turn_around_delay","Vehicle Failure of this Unit",11,2.11207028969924e-05
+"event_df","type_of_turn_around_delay","Rendezvous Transport Unavailable",7,1.34404472980861e-05
+"event_df","type_of_turn_around_delay","Vehicle Crash of this Unit",4,7.68025559890633e-06
+"event_df","type_of_scene_delay","None/No Delay",372010,0.714282971337286
+"event_df","type_of_scene_delay",NA,123571,0.237264216153114
+"event_df","type_of_scene_delay","Other",9891,0.0189913520321956
+"event_df","type_of_scene_delay","Staff Delay",4972,0.00954655770944057
+"event_df","type_of_scene_delay","Patient Access",2929,0.00562386716229916
+"event_df","type_of_scene_delay","Extrication",1802,0.0034599551473073
+"event_df","type_of_scene_delay","Safety-Patient",1010,0.00193926453872385
+"event_df","type_of_scene_delay","Awaiting Ground Unit",935,0.00179525974624435
+"event_df","type_of_scene_delay","Distance",705,0.00135364504930724
+"event_df","type_of_scene_delay","Safety-Crew/Staging",665,0.00127684249331818
+"event_df","type_of_scene_delay","Directions/Unable to Locate",580,0.00111363706184142
+"event_df","type_of_scene_delay","Triage/Multiple Patients",501,0.000961952013763018
+"event_df","type_of_scene_delay","Language Barrier",441,0.000846748179779423
+"event_df","type_of_scene_delay","Awaiting Air Unit",283,0.000543378083622623
+"event_df","type_of_scene_delay","Traffic",166,0.000318730607354613
+"event_df","type_of_scene_delay","Crowd",146,0.000280329329360081
+"event_df","type_of_scene_delay","Weather",88,0.000168965623175939
+"event_df","type_of_scene_delay","Mechanical Issue-Unit, Equipment, etc.",82,0.00015744523977758
+"event_df","type_of_scene_delay","HazMat",17,3.26410862953519e-05
+"event_df","type_of_scene_delay","Vehicle Failure of this Unit",15,2.88009584958987e-05
+"event_df","type_of_scene_delay","Vehicle Crash Involving this Unit",7,1.34404472980861e-05
+"event_df","type_of_response_delay","None/No Delay",401759,0.771402952290252
+"event_df","type_of_response_delay",NA,101835,0.195529707228657
+"event_df","type_of_response_delay","Distance",9409,0.0180658812325274
+"event_df","type_of_response_delay","Other",2794,0.00536465853583607
+"event_df","type_of_response_delay","Traffic",1551,0.00297801910847593
+"event_df","type_of_response_delay","Directions/Unable to Locate",877,0.00168389604006021
+"event_df","type_of_response_delay","Scene Safety (Not Secure for EMS)",752,0.00144388805259439
+"event_df","type_of_response_delay","Staff Delay",635,0.00121924057632638
+"event_df","type_of_response_delay","Weather",401,0.00076994562379036
+"event_df","type_of_response_delay","Route Obstruction (e.g., Train)",285,0.000547218211422076
+"event_df","type_of_response_delay","Crowd",125,0.000240007987465823
+"event_df","type_of_response_delay","Mechanical Issue-Unit, Equipment, etc.",120,0.00023040766796719
+"event_df","type_of_response_delay","Diversion (Different Incident)",107,0.000205446837270744
+"event_df","type_of_response_delay","Flight Planning",100,0.000192006389972658
+"event_df","type_of_response_delay","Rendezvous Transport Unavailable",43,8.25627476882431e-05
+"event_df","type_of_response_delay","Vehicle Failure of this Unit",16,3.07210223956253e-05
+"event_df","type_of_response_delay","Vehicle Crash Involving this Unit",4,7.68025559890633e-06
+"event_df","type_of_response_delay","HazMat",3,5.76019169917975e-06
+"patient_df","patient_race","White",277606,0.533021258947498
+"patient_df","patient_race","Black or African American",102377,0.196570381862308
+"patient_df","patient_race",NA,77422,0.148655187244632
+"patient_df","patient_race","Hispanic or Latino",49429,0.0949068384995853
+"patient_df","patient_race","Asian",8583,0.0164799084513533
+"patient_df","patient_race","American Indian or Alaska Native",3946,0.0075765721483211
+"patient_df","patient_race","Native Hawaiian or Other Pacific Islander",1453,0.00278985284630273
+"patient_df","age_group","Senior",275626,0.529219532426039
+"patient_df","age_group","Younger",245190,0.470780467573961
+"patient_df","age_interval_group","85+",60492,0.11614850542226
+"patient_df","age_interval_group","75-79",49095,0.0942655371570766
+"patient_df","age_interval_group","70-74",46958,0.0901623606033609
+"patient_df","age_interval_group","65-69",46113,0.0885399066080919
+"patient_df","age_interval_group","80-84",42532,0.081664157783171
+"patient_df","age_interval_group","60-64",42215,0.0810554975269577
+"patient_df","age_interval_group","55-59",32882,0.0631355411508095
+"patient_df","age_interval_group","50-54",27019,0.0518782065067125
+"patient_df","age_interval_group","25-29",24320,0.0466959540413505
+"patient_df","age_interval_group","30-34",23941,0.0459682498233541
+"patient_df","age_interval_group","35-39",23920,0.0459279284814599
+"patient_df","age_interval_group","40-44",23122,0.044395717489478
+"patient_df","age_interval_group","20-24",20826,0.0399872507757058
+"patient_df","age_interval_group","15-19",19084,0.0366424994623821
+"patient_df","age_interval_group","10-14",15954,0.0306326994562379
+"patient_df","age_interval_group","0-4",10034,0.0192659211698565
+"patient_df","age_interval_group","5-9",7474,0.0143505575865565
+"patient_df","age_interval_group","45-49",4835,0.00928350895517803

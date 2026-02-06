@@ -2,8 +2,16 @@ library(tidyverse)
 library(ggplot2)
 library(hms)
 library(RColorBrewer)
+library(scales)
 
 display.brewer.all()
+
+# Source - https://stackoverflow.com/a/57157075
+# Posted by Tung
+# Retrieved 2026-02-06, License - CC BY-SA 4.0
+
+palette <- c("#88CCEE", "#CC6677", "#DDCC77", "#117733", "#332288", "#AA4499", "#44AA99", "#999933", "#882255", "#661100", "#6699CC", "#888888")
+
 
 # RQ: Is there a significant difference between the younger and older age groups regarding:
 #       1. dispatch_reason
@@ -51,7 +59,9 @@ reason_per_age_group_and_hour <- focus_data %>%
   mutate(unit_notified_time = as_hms(round_date(unit_notified_by_dispatch_datetime, "hour"))) %>% 
   group_by(unit_notified_time, dispatch_reason, age_group) %>% 
   summarize(count = n(), .groups = "drop") %>% 
-  arrange(desc(count))
+  group_by(unit_notified_time, age_group) %>% 
+  mutate(prop = count / sum(count)) %>% 
+  ungroup()
   #   %>%
   # mutate(
   #   hour = hour(unit_notified_time),
@@ -63,30 +73,73 @@ reason_per_age_group_and_hour <- focus_data %>%
   #   )
   # )
 
-ggplot(na.omit(reason_per_age_group_and_hour), 
+# # Stacked bar chart - postion = "stack"
+# ggplot(na.omit(reason_per_age_group_and_hour), 
+#        aes(x = unit_notified_time, 
+#            y = count, 
+#            .group = dispatch_reason, 
+#            fill = dispatch_reason)) + 
+#   geom_vline(xintercept = c(28800, 28800 * 2), linetype = "dashed", color = "black", linewidth = 1) +
+#   geom_col(position = "stack") +
+#   scale_fill_manual(values = palette) +
+#   scale_y_continuous(labels = percent) +
+#   facet_wrap(~age_group) +
+#   theme_light() +
+#   theme(legend.position = "bottom",
+#         strip.background = element_rect(
+#           fill = "black"
+#         )) +
+#   labs(
+#     title = "Top 10 Dispacth Reasons At Each Hour",
+#     x = "Time",
+#     y = "Count",
+#     fill = NULL
+#   ) +
+#   geom_text(
+#     aes(label = count),
+#     position = position_stack(vjust = .5),
+#     color = "white"
+#   )
+
+# Proportional - position = "fill"
+ggplot(reason_per_age_group_and_hour, 
        aes(x = unit_notified_time, 
-           y = count, 
-           .group = dispatch_reason, 
+           y = prop, 
            fill = dispatch_reason)) + 
-  geom_vline(xintercept = c(28800, 28800 * 2), linetype = "dashed", color = "black", linewidth = 1) +
-  geom_col(position = "stack") +
-  scale_fill_brewer(palette = "Paired") +
-  #scale_y_continuous(limits = c(0,15), n.breaks = 5) +
-  facet_wrap(~age_group) +
-  theme_light() +
-  theme(legend.position = "bottom") +
+  geom_vline(xintercept = c(28800, 28800 * 2),
+             linetype = "dashed",
+             color = "black",
+             linewidth = 1) +
+  geom_col(position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values = palette) +
+  facet_wrap(~age_group, ncol = 2) +
+  theme_bw() +
+  theme(
+    legend.position = "bottom",
+    strip.background = element_rect(
+    fill = "black"),
+    plot.title = element_text(size = 24, face = "bold"),
+    axis.title.x = element_text(size = 16),
+    axis.title.y = element_text(size = 16),
+    axis.text.x  = element_text(size = 14),
+    axis.text.y  = element_text(size = 14),
+    strip.text = element_text(size = 50, face = "bold", color = "white"),
+    legend.text  = element_text(size = 11),
+    legend.title = element_text(size = 12)
+  ) +
   labs(
-    title = "Top 10 Dispacth Reasons At Each Hour",
+    title = "Proportion of Top 10 Dispatch Reasons by Hour",
     x = "Time",
-    y = "Count",
+    y = "Proportion",
     fill = NULL
   ) +
   geom_text(
-    aes(label = count),
-    position = position_stack(vjust = .5),
+    aes(label = percent(prop, accuracy = 1)),
+    position = position_stack(vjust = 0.5),
+    size = 5,
     color = "white"
   )
-
 
 
 # time resolved per dispatch reason faceted by age group ------------------
@@ -110,8 +163,21 @@ ggplot(na.omit(reason_per_age_group_and_hour),
     geom_line(linewidth = 1.25, alpha = .5) +
     geom_point(size = 2) +
     facet_wrap(~age_group) +
+    scale_color_manual(values = palette) +
     theme_bw() +
-    theme(legend.position = "bottom") +
+    theme(
+      legend.position = "bottom",
+      strip.background = element_rect(
+        fill = "black"),
+      plot.title = element_text(size = 24, face = "bold"),
+      axis.title.x = element_text(size = 16),
+      axis.title.y = element_text(size = 16),
+      axis.text.x  = element_text(size = 12),
+      axis.text.y  = element_text(size = 12),
+      strip.text = element_text(size = 50, face = "bold", color = "white"),
+      legend.text  = element_text(size = 11),
+      legend.title = element_text(size = 12)
+    ) +
     geom_vline(xintercept = c(28800, 28800 * 2), linetype = "dashed") +
     labs(
       title = "The Average Time to Conclude PCR per Top 10 Dispatch Reason Throughout the Day",
@@ -122,7 +188,7 @@ ggplot(na.omit(reason_per_age_group_and_hour),
     geom_text(
       aes(label = avg_time),
       vjust = -1,
-      size = 3
+      size = 4
     )
   
     # Includes an extreme outlier. PCR # 310894504 (senior and sick @ 21:00:00) lasted 25 hours.
@@ -131,7 +197,7 @@ ggplot(na.omit(reason_per_age_group_and_hour),
   
   time_per_dispatch_boxplot <- focus_data %>% 
     select(PcrKey, dispatch_reason, age_group, EMSTotalCallTimeMin) %>% 
-    #filter(dispatch_reason %in% top_10_dispatch_reasons) %>%
+    filter(dispatch_reason %in% top_10_dispatch_reasons) %>%
     group_by(dispatch_reason)
   
   time_per_dispatch_boxplot  %>% 
@@ -149,8 +215,8 @@ ggplot(na.omit(reason_per_age_group_and_hour),
     print(n = Inf)
   
   ggplot(na.omit(time_per_dispatch_boxplot), aes(x = dispatch_reason, y = EMSTotalCallTimeMin, fill = age_group)) +
-    geom_boxplot(outlier.shape = 3, outlier.size = 2) +
-    scale_fill_brewer(palette = "Set1") +
+    geom_violin() +
+    scale_fill_manual(values = palette) +
     coord_cartesian(ylim = c(0, 300)) +
     coord_flip() +
     scale_y_continuous(limits = c(0, 250), n.breaks = 15) +
@@ -160,6 +226,19 @@ ggplot(na.omit(reason_per_age_group_and_hour),
       x = NULL,
       y = "Minutes",
       fill = "Age group"
+    ) +
+    theme(
+      legend.position = "bottom",
+      strip.background = element_rect(
+        fill = "black"),
+      plot.title = element_text(size = 24, face = "bold"),
+      axis.title.x = element_text(size = 16),
+      axis.title.y = element_text(size = 16),
+      axis.text.x  = element_text(size = 12),
+      axis.text.y  = element_text(size = 12),
+      strip.text = element_text(size = 50, face = "bold", color = "white"),
+      legend.text  = element_text(size = 11),
+      legend.title = element_text(size = 12)
     )
 
 # statistical tests -------------------------------------------------------
