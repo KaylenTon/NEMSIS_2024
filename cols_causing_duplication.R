@@ -1,5 +1,7 @@
 library(dplyr)
+library(tidyverse)
 library(ggplot2)
+library(mgsub)
 
 #after running line 146 --> use_data <- reduce(sas_data_list, left_join, by = "PcrKey"))
   
@@ -466,3 +468,24 @@ dupe_cols_only <- dupe_cols_only %>%
 
 #write.csv(dupe_cols_only, "rowcols_only_of_pcrkey_dupes.csv", row.names = FALSE)
 #write.csv(frequency_tbl, "pcrkey_dupes_frequency_tbl.csv", row.names = FALSE)
+
+## COMBINE CONFLICTING VALS INTO ONE PCRKEY
+clean_str <- function(x) {
+  x %>%
+    str_remove_all("Yes|/|e.g.,|,|\\(|\\)|") %>% 
+    str_replace_all("or| ", "_") %>%
+    str_replace_all("/", "_") %>%
+    str_replace_all("__+","_") %>%
+    str_trim()
+}
+
+dupe_cols_only <- dupe_cols_only %>%
+  mutate(across(everything(),~clean_str(.)))
+
+dupe_cols_only <- dupe_cols_only %>%
+  group_by(PcrKey) %>%
+  summarise(across(everything(),
+                   ~paste(unique(na.omit(.)), collapse = "_")),
+                   .groups = "drop")
+  
+ggplot(dupe_cols_only, aes())
