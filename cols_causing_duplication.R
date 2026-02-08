@@ -5,8 +5,7 @@ library(mgsub)
 
 #after running line 146 --> use_data <- reduce(sas_data_list, left_join, by = "PcrKey"))
   
-duplicates <- clean_NA[duplicated(clean_NA$PcrKey),]
-duplicates <- duplicates %>%
+clean_NA <- clean_NA %>%
   rename(
     dispatch_reason = eDispatch_01,
     EMD_performed = eDispatch_02,
@@ -419,7 +418,7 @@ duplicates <- duplicates %>%
   ) %>% 
   select(-ageinyear)
 
-
+duplicates <- clean_NA[duplicated(clean_NA$PcrKey),]
 nrow(duplicates)
 
 #check which columns have conflicting values that are causing duplicate PcrKeys
@@ -470,6 +469,15 @@ dupe_cols_only <- dupe_cols_only %>%
 #write.csv(frequency_tbl, "pcrkey_dupes_frequency_tbl.csv", row.names = FALSE)
 
 ## COMBINE CONFLICTING VALS INTO ONE PCRKEY
+
+#where pcrkey is duplicated, merge differing columns into one string
+clean_NA %>%
+  group_by(PcrKey) %>%
+  summarise(across(everything(),
+            ~paste(unique(na.omit(.)), collapse = "_")),
+            .groups = "drop")
+
+
 clean_str <- function(x) {
   x %>%
     str_remove_all("Yes|/|e.g.,|,|\\(|\\)|") %>% 
@@ -486,6 +494,8 @@ dupe_cols_only <- dupe_cols_only %>%
   group_by(PcrKey) %>%
   summarise(across(everything(),
                    ~paste(unique(na.omit(.)), collapse = "_")),
-                   .groups = "drop")
+                   .groups = "drop") %>%
+  subset(select = -c(diff_cols))
   
-ggplot(dupe_cols_only, aes())
+clean_NA <- clean_NA %>%
+  rows_update(dupe_cols_only, by = "PcrKey")
