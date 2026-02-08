@@ -490,7 +490,7 @@ clean_str <- function(x) {
 dupe_cols_only <- dupe_cols_only %>%
   mutate(across(everything(),~clean_str(.)))
 
-dupe_cols_only <- dupe_cols_only %>%
+dupe_cols_df <- dupe_cols_df %>%
   group_by(PcrKey) %>%
   summarise(across(everything(),
                    ~paste(unique(na.omit(.)), collapse = "_")),
@@ -498,4 +498,4 @@ dupe_cols_only <- dupe_cols_only %>%
   subset(select = -c(diff_cols))
   
 clean_NA <- clean_NA %>%
-  rows_update(dupe_cols_only, by = "PcrKey")
+  rows_update(dupe_cols_df, by = "PcrKey")
