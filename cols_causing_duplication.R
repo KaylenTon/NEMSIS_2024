@@ -3,7 +3,7 @@ library(tidyverse)
 library(ggplot2)
 library(mgsub)
 
-#after running line 146 --> use_data <- reduce(sas_data_list, left_join, by = "PcrKey"))
+#after running line 155 in data_cleaning.R
   
 clean_NA <- clean_NA %>%
   rename(
@@ -20,7 +20,7 @@ clean_NA <- clean_NA %>%
     transport_disposition = eDisposition_30,
     transport_mode_from_scene = eDisposition_17,
     datetime_of_destination_prearrival_alert_or_activation = eDisposition_25,
-    desination_team_prearrival_alert_or_activation = eDisposition_24,
+    destination_team_prearrival_alert_or_activation = eDisposition_24,
     type_of_service_requested = eResponse_05,
     unit_transport_and_equipment_capability = eResponse_07,
     response_mode_to_scene = eResponse_23,
@@ -470,32 +470,42 @@ dupe_cols_only <- dupe_cols_only %>%
 
 ## COMBINE CONFLICTING VALS INTO ONE PCRKEY
 
-#where pcrkey is duplicated, merge differing columns into one string
-clean_NA %>%
-  group_by(PcrKey) %>%
-  summarise(across(everything(),
-            ~paste(unique(na.omit(.)), collapse = "_")),
-            .groups = "drop")
-
-
 clean_str <- function(x) {
   x %>%
-    str_remove_all("Yes|/|e.g.,|,|\\(|\\)|") %>% 
-    str_replace_all("or| ", "_") %>%
-    str_replace_all("/", "_") %>%
-    str_replace_all("__+","_") %>%
+    str_remove_all("Yes|e.g\\.|,|\\(|\\)") %>% 
+    str_replace_all("/|\\-|or| ", "_") %>%
+    str_replace_all("_+", "_") %>%
     str_trim()
 }
 
-dupe_cols_only <- dupe_cols_only %>%
-  mutate(across(everything(),~clean_str(.)))
+dupe_cols_cl <- dupe_cols_only %>%
+  mutate(across(-c(PcrKey, datetime_of_destination_prearrival_alert_or_activation),~clean_str(.)))
 
-dupe_cols_df <- dupe_cols_df %>%
+dt <- dupe_cols_only[grepl('datetime_of_destination_prearrival_alert_or_activation', dupe_cols_only$diff_cols),]
+#date time and destination pre-arrival alert are correlated. We probably only care about the latest date, so let's just keep the last date record for each duplicated PcrKey
+
+dupe_cols_mer <- dupe_cols_cl %>%
   group_by(PcrKey) %>%
-  summarise(across(everything(),
+  summarise(
+    datetime_of_destination_prearrival_alert_or_activation = if(all(is.na(datetime_of_destination_prearrival_alert_or_activation))) {
+      as.POSIXct(NA)
+    }else{
+      max(datetime_of_destination_prearrival_alert_or_activation, na.rm = TRUE) 
+    },
+    across((-datetime_of_destination_prearrival_alert_or_activation),
                    ~paste(unique(na.omit(.)), collapse = "_")),
                    .groups = "drop") %>%
   subset(select = -c(diff_cols))
+
+#check if date times are correct
+dupe_cols_mer[dupe_cols_mer$PcrKey == 290693410,]$datetime_of_destination_prearrival_alert_or_activation
+max(dt[dt$PcrKey == 290693410,]$datetime_of_destination_prearrival_alert_or_activation)
   
-clean_NA <- clean_NA %>%
-  rows_update(dupe_cols_df, by = "PcrKey")
+  
+clean_NA_drop <- clean_NA %>%
+  filter(!PcrKey %in% dupe_cols_mer$PcrKey) #removing all duplicated keys from the clean_NA
+
+final_clean_NA <- bind_rows(clean_NA_drop, dupe_cols_mer)
+
+clean_Na_distinct <- clean_NA %>%
+  distinct(PcrKey, .keep_all = TRUE)

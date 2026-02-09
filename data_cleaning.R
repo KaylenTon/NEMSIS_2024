@@ -140,12 +140,8 @@ for (i in seq_along(select_paths)) {
 names(sas_data_list) <- file_path_sans_ext(basename(select_paths))
 
 
-use_data <- reduce(sas_data_list, left_join, by = "PcrKey") %>% 
-   # distinct(PcrKey, .keep_all = TRUE)
-
-#keep pcrkey duplicates
 use_data <- reduce(sas_data_list, left_join, by = "PcrKey")
-
+   # distinct(PcrKey, .keep_all = TRUE)
 
 # Selecting/reordering variables ------------------------------------------
 
@@ -183,7 +179,7 @@ event_df <- clean_NA %>%
     transport_disposition = eDisposition_30,
     transport_mode_from_scene = eDisposition_17,
     datetime_of_destination_prearrival_alert_or_activation = eDisposition_25,
-    desination_team_prearrival_alert_or_activation = eDisposition_24,
+    destination_team_prearrival_alert_or_activation = eDisposition_24,
     type_of_service_requested = eResponse_05,
     unit_transport_and_equipment_capability = eResponse_07,
     response_mode_to_scene = eResponse_23,
@@ -381,8 +377,8 @@ event_df <- clean_NA %>%
       "4217007" = "Non-Emergent Upgraded to Emergent"
     ),
     datetime_of_destination_prearrival_alert_or_activation = as.POSIXct(fast_strptime(datetime_of_destination_prearrival_alert_or_activation, format = "%d%b%Y:%H:%M:%S")),
-    desination_team_prearrival_alert_or_activation = recode(
-      desination_team_prearrival_alert_or_activation,
+    destination_team_prearrival_alert_or_activation = recode(
+      destination_team_prearrival_alert_or_activation,
       "4224001" = "No",
       "4224003" = "Yes-Adult Trauma",
       "4224005" = "Yes-Cardiac Arrest",
