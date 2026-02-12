@@ -140,10 +140,16 @@ for (i in seq_along(select_paths)) {
 names(sas_data_list) <- file_path_sans_ext(basename(select_paths))
 
 # start here after you open cleaningDataFileObjects.RData
+
+library(tidyverse)
+library(haven)
+library(tools)
+library(purrr)
+library(lubridate)
+
 use_data <- reduce(sas_data_list, left_join, by = "PcrKey")
    # distinct(PcrKey, .keep_all = TRUE)
   
-
 # Selecting/reordering variables ------------------------------------------
 
 select_data <- use_data %>% 
@@ -537,44 +543,42 @@ clean_NA <- clean_NA %>%
   mutate(
     age_group = as.factor(ifelse(patient_age >= 65, "Senior", "Younger")
     )) %>% 
-  rename(
-    patient_age_years = patient_age
-  ) %>% 
   mutate(
     age_interval_group = as.factor(case_when(
-      patient_age_years >= 0 & patient_age_years < 5 ~ "0-4",
-      patient_age_years >= 5 & patient_age_years < 10 ~ "5-9",
-      patient_age_years >= 10 & patient_age_years < 15 ~ "10-14",
-      patient_age_years >= 15 & patient_age_years < 20 ~ "15-19",
-      patient_age_years >= 20 & patient_age_years < 25 ~ "20-24",
-      patient_age_years >= 25 & patient_age_years < 30 ~ "25-29",
-      patient_age_years >= 30 & patient_age_years < 35 ~ "30-34",
-      patient_age_years >= 35 & patient_age_years < 40 ~ "35-39",
-      patient_age_years >= 40 & patient_age_years < 45 ~ "40-44",
-      patient_age_years >= 45 & patient_age_years < 50 ~ "45-49",
-      patient_age_years >= 50 & patient_age_years < 55 ~ "50-54",
-      patient_age_years >= 55 & patient_age_years < 60 ~ "55-59",
-      patient_age_years >= 60 & patient_age_years < 65 ~ "60-64",
-      patient_age_years >= 65 & patient_age_years < 70 ~ "65-69",
-      patient_age_years >= 70 & patient_age_years < 75 ~ "70-74",
-      patient_age_years >= 75 & patient_age_years < 80 ~ "75-79",
-      patient_age_years >= 80 & patient_age_years < 85 ~ "80-84",
-      patient_age_years >= 85 ~ "85+"
+      patient_age >= 0 & patient_age < 5 ~ "0-4",
+      patient_age >= 5 & patient_age < 10 ~ "5-9",
+      patient_age >= 10 & patient_age < 15 ~ "10-14",
+      patient_age >= 15 & patient_age < 20 ~ "15-19",
+      patient_age >= 20 & patient_age < 25 ~ "20-24",
+      patient_age >= 25 & patient_age < 30 ~ "25-29",
+      patient_age >= 30 & patient_age < 35 ~ "30-34",
+      patient_age >= 35 & patient_age < 40 ~ "35-39",
+      patient_age >= 40 & patient_age < 45 ~ "40-44",
+      patient_age >= 45 & patient_age < 50 ~ "45-49",
+      patient_age >= 50 & patient_age < 55 ~ "50-54",
+      patient_age >= 55 & patient_age < 60 ~ "55-59",
+      patient_age >= 60 & patient_age < 65 ~ "60-64",
+      patient_age >= 65 & patient_age < 70 ~ "65-69",
+      patient_age >= 70 & patient_age < 75 ~ "70-74",
+      patient_age >= 75 & patient_age < 80 ~ "75-79",
+      patient_age >= 80 & patient_age < 85 ~ "80-84",
+      patient_age >= 85 ~ "85+"
     ))
   ) %>% 
   mutate(
-    patient_age_years = case_when(
-      is.na(patient_age_years) ~ ageinyear,
-      patient_age_years > ageinyear ~ patient_age_years, # So that 12 month babies are 1 years old.
+    patient_age = case_when(
+      is.na(patient_age) ~ ageinyear,
+      patient_age > ageinyear ~ patient_age, # So that 12 month babies are 1 years old.
       TRUE ~ ageinyear
     )
   ) %>% 
   select(-ageinyear) %>% 
   # relevel factors
   mutate(
-    age_group = relevel(age_group, "Younger", "Senior"),
+    age_group = factor(age_group, levels = c("Younger", "Senior")),
     age_interval_group = factor(age_interval_group, levels = c("0-4", "5-9", "10-14", "15-19", "20-24", "25-29", "30-34", "35-39", "40-44", "45-49", "50-54", "55-59", "60-64", "65-69", "70-74", "75-79", "80-84", "85+"))
-  )
+  ) %>% 
+  filter(!is.na(patient_age))
 
 #(needs review to simplify certain processes): 
 # TO MERGE DUPLICATE PCRKEY AND KEEP ALL COL INFORMATION:
@@ -600,7 +604,7 @@ time_df <- final_clean_NA %>%
 # Patient table -----------------------------------------------------------
 
 patient_df <- final_clean_NA %>% 
-  select(PcrKey, patient_age_years:age_interval_group)
+  select(PcrKey, patient_age:age_interval_group)
 
 # save.image(file = "cleaningDataFileObjects.RData")
 
