@@ -28,7 +28,7 @@ calls_per_interval_unique_minute <- time_df %>%
 #   group_by(interval_per_8) %>%
 #   summarise(total_calls = sum(n))
 
-ggplot(calls_per_interval_unique_minute, aes(x = unit_notified_time, y = n, color = interval_per_8)) + geom_line()
+ggplot(calls_per_interval_unique_minute, aes(x = unit_notified_time, y = n, color = interval_per_8)) + geom_line() + scale_y_continuous(limits = c(0, 400))
 
 # unique hour
 calls_per_interval_unique_hour <- time_df %>% 
