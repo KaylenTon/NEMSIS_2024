@@ -33,6 +33,17 @@ custom_theme <- theme(
   plot.margin = margin(20, 30, 15, 10, "mm")
 )
 
+top_10_dispatch_reasons <- c("Sick Person",
+                             "Transfer/Interfacility/Palliative Care",
+                             "Breathing Problem",
+                             "Falls",
+                             "Chest Pain (Non-Traumatic)",
+                             "Traffic/Transportation Incident",
+                             "Unconscious/Fainting/Near-Fainting",
+                             "Unknown Problem/Person Down",
+                             "Psychiatric Problem/Abnormal Behavior/Suicide Attempt",
+                             "Convulsions/Seizure")
+
 # interest variables ------------------------------------------------------
 
 from_location <- location_df
@@ -107,7 +118,7 @@ year_events <- focus_data %>%
   count()
 
 ggplot(year_events, aes(x = unit_notified_by_dispatch_datetime, y = n)) +
-  geom_line() +
+  geom_line(size = 1.25) +
   scale_x_date(date_labels = "%b %Y", date_breaks = "1 month") +
   labs(
     title = "Count of EMS Dispatches Throughout 2024",
@@ -127,7 +138,8 @@ ggplot(year_events, aes(x = unit_notified_by_dispatch_datetime, y = n)) +
     strip.text = element_text(size = 50, face = "bold", color = "white"),
     legend.text  = element_text(size = 11),
     legend.title = element_text(size = 12)
-  )
+  ) +
+  custom_theme
 
 
 # Fill bar chart - top 10 dispatch reasons by hour ------------------------
@@ -203,3 +215,64 @@ ggplot(reason_per_age_group_and_hour,
     size = 5,
     color = "white"
   )
+
+
+# Multi Line Plot - top 10 dispatch reasons and time resolve --------------
+
+
+time_per_age_group_and_10_reasons_through_time <- focus_data %>% 
+  select(PcrKey, dispatch_reason, age_group, unit_notified_by_dispatch_datetime, EMSTotalCallTimeMin) %>% 
+  filter(dispatch_reason %in% top_10_dispatch_reasons) %>% 
+  mutate(unit_notified_time = as_hms(round_date(unit_notified_by_dispatch_datetime, "hour"))) %>% 
+  group_by(unit_notified_time, dispatch_reason, age_group) %>% 
+  summarize(avg_time = mean(EMSTotalCallTimeMin, na.rm = TRUE), .groups = "drop") %>% 
+  mutate(avg_time = round(avg_time)) %>% 
+  arrange(desc(avg_time))
+
+labels_minmax <- time_per_age_group_and_10_reasons_through_time %>%
+  group_by(age_group, dispatch_reason) %>%
+  filter(avg_time == max(avg_time) | avg_time == min(avg_time))
+
+ggplot(time_per_age_group_and_10_reasons_through_time, 
+       aes(x = unit_notified_time, 
+           y = avg_time, 
+           .group = dispatch_reason, 
+           color = dispatch_reason)) + 
+  geom_line(linewidth = 1.5, alpha = .5) +
+  geom_point(size = 2) +
+  facet_wrap(~age_group) +
+  scale_x_time(labels = label_time(format = "%H:%M")) +
+  scale_color_manual(values = palette_12) +
+  theme_bw() +
+  custom_theme +
+  theme(
+    axis.title.x = element_text(size = 24, face = "bold", margin = margin(t = 30, b = 15)),
+    axis.title.y = element_text(size = 24, face = "bold"),
+    axis.text.x  = element_text(size = 18),
+    axis.text.y  = element_text(size = 18),
+    plot.margin = margin(20, 20, 15, 10, "mm")
+    ) +
+  geom_vline(xintercept = c(28800, 28800 * 2), linetype = "dashed") +
+  labs(
+    title = "The Average Time to Conclude PCR per Top 10 Dispatch Reason Throughout the Day",
+    x = "Time",
+    y = "Minutes",
+    color = NULL
+  ) +
+  geom_text(
+    data = labels_minmax,
+    aes(label = avg_time),
+    vjust = -1,
+    size = 5,
+    show.legend = FALSE
+  ) +
+  guides(
+    color = guide_legend(
+      override.aes = list(
+        linetype = 0,
+        shape = 20,
+        size = 10
+      )
+    )
+  )
+
