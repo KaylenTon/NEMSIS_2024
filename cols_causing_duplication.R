@@ -50,10 +50,10 @@ merge_duplicates <- function(last_check = FALSE) {
   
   dupe_col_names <- colnames(dupe_cols_only)
   
-    
+  
   #write.csv(dupe_cols_only, "rowcols_only_of_pcrkey_dupes.csv", row.names = FALSE)
   #write.csv(frequency_tbl, "pcrkey_dupes_frequency_tbl.csv", row.names = FALSE) 
-
+  
   
   ## COMBINE CONFLICTING VALS INTO ONE PCRKEY
   
@@ -94,8 +94,13 @@ merge_duplicates <- function(last_check = FALSE) {
       },
       
       #merge all other rows duplicated by PcrKey together
-      across(where(is.character) & all_of(dupe_col_names),
-             ~paste(unique(na.omit(.)), collapse = "_")),
+      across(.cols = where(is.character) & -any_of(c("PcrKey","diff_cols")),
+             .fns = ~paste(unique(na.omit(.)), collapse = "_")),
+      #keep original col types of other cols
+      across(
+        .cols = !where(is.character) & -any_of(c("PcrKey", "dt_of_dpaa_duration", "datetime_of_destination_prearrival_alert_or_activation")),
+        .fns = ~first(na.omit(.))
+      ),
       .groups = "drop")
   #subset(select = -c(diff_cols))
   
@@ -123,6 +128,7 @@ merge_duplicates <- function(last_check = FALSE) {
       count(PcrKey) %>%
       filter(n > 1)
     nrow(leaked_dupes) 
+    
   }
     
     return(final_clean_NA)
@@ -130,3 +136,4 @@ merge_duplicates <- function(last_check = FALSE) {
 
 
 final_clean_NA <- merge_duplicates()
+
