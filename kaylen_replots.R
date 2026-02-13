@@ -219,7 +219,6 @@ ggplot(reason_per_age_group_and_hour,
 
 # Multi Line Plot - top 10 dispatch reasons and time resolve --------------
 
-
 time_per_age_group_and_10_reasons_through_time <- focus_data %>% 
   select(PcrKey, dispatch_reason, age_group, unit_notified_by_dispatch_datetime, EMSTotalCallTimeMin) %>% 
   filter(dispatch_reason %in% top_10_dispatch_reasons) %>% 
@@ -229,7 +228,7 @@ time_per_age_group_and_10_reasons_through_time <- focus_data %>%
   mutate(avg_time = round(avg_time)) %>% 
   arrange(desc(avg_time))
 
-labels_minmax <- time_per_age_group_and_10_reasons_through_time %>%
+labels_minmax_1 <- time_per_age_group_and_10_reasons_through_time %>%
   group_by(age_group, dispatch_reason) %>%
   filter(avg_time == max(avg_time) | avg_time == min(avg_time))
 
@@ -260,7 +259,7 @@ ggplot(time_per_age_group_and_10_reasons_through_time,
     color = NULL
   ) +
   geom_text(
-    data = labels_minmax,
+    data = labels_minmax_1,
     aes(label = avg_time),
     vjust = -1,
     size = 5,
@@ -276,3 +275,122 @@ ggplot(time_per_age_group_and_10_reasons_through_time,
     )
   )
 
+# Visualizing Calls Per Interval with Age Groups --------------------------
+
+# Multiple line graph using .group = age_group
+calls_per_interval <- focus_data %>% 
+  select(PcrKey, unit_notified_by_dispatch_datetime, age_group) %>% 
+  mutate(unit_notified_hour = round_date(unit_notified_by_dispatch_datetime, "hour")) %>% 
+  mutate(unit_notified_time = as_hms(unit_notified_hour)) %>% 
+  mutate(
+    hour = hour(unit_notified_time),
+    interval_per_8 = hour %/% 8,
+    interval_per_8 = case_when(
+      interval_per_8 == 0 ~ "00:00:00 - 07:59:00", #00:00:00 - 07:59:00
+      interval_per_8 == 1 ~ "08:00:00 - 15:59:00", #08:00:00 - 15:59:00
+      interval_per_8 == 2 ~ "16:00:00 - 23:59:00", #16:00:00 - 23:59:00
+    )
+  ) %>% 
+  group_by(unit_notified_time, age_group) %>% 
+  summarise(count = n(), .groups = "drop")
+
+labels_minmax_2 <- calls_per_interval %>%
+  group_by(age_group, unit_notified_time) %>%
+  filter(count == max(count) | count == min(count))
+
+ggplot(calls_per_interval, aes(x = unit_notified_time, y = count, .group = age_group, color = age_group)) + 
+  geom_line(linewidth = 1, linetype = "dashed") +
+  geom_point(size = 2) +
+  labs(
+    title = "Calls per interval using:  unit_notified_by_dispatch_datetime",
+    subtitle = "Count Time Series",
+    x = "Time", 
+    y = "Call Count",
+    color = NULL
+  ) +
+  theme_bw() +
+  geom_text(
+    aes(label = count, 
+        color = age_group),
+    vjust = -1,
+    size = 5
+  ) +
+  geom_vline(xintercept = c(28800, 28800 * 2), linetype = "dashed") +
+  custom_theme +
+  geom_text(
+    data = labels_minmax_2,
+    aes(label = count),
+    vjust = -1,
+    size = 5,
+    show.legend = FALSE
+  ) +
+  guides(
+    color = guide_legend(
+      override.aes = list(
+        linetype = 0,
+        shape = 20,
+        size = 10
+      )
+    )
+  )
+
+ggplot(calls_per_interval, aes(x = unit_notified_time, y = count, color = interval_per_8)) + 
+  geom_line(linewidth = 1, linetype = "dashed") + 
+  geom_point(size = 2) +
+  facet_wrap(~as.factor(age_group)) + # Should stack charts in rows instead of having columns tbh.
+  labs(
+    title = "Calls per interval using:  unit_notified_by_dispatch_datetime",
+    subtitle = "Count Time Series",
+    x = "Time", 
+    y = "Call Count",
+    color = "Time interval"
+  ) +
+  theme_bw() +
+  geom_text(
+    aes(label = count),
+    vjust = -1,
+    size = 4,
+    color = "black"
+  ) +
+  custom_theme
+
+# Multiple line graph using .group = age_group
+
+labels_minmax_2 <- calls_per_interval %>%
+  group_by(age_group) %>%
+  filter(count == max(count) | count == min(count)) %>%
+  ungroup()
+
+ggplot(calls_per_interval, aes(x = unit_notified_time, y = count, color = age_group)) + 
+  geom_line(linewidth = 1.5, linetype = "dashed") +
+  geom_point(size = 2) +
+  scale_y_continuous(limits = c(0, 17000), breaks = seq(0, 18000, by = 2500), minor_breaks = seq(0, 18000, by = 1000)) +
+  labs(
+    title = "EMS Notifications Per Hour",
+    x = "Time", 
+    y = "Count",
+    color = NULL
+  ) +
+  theme_bw() +
+  geom_vline(xintercept = c(28800, 28800 * 2), linetype = "dashed") +
+  custom_theme +
+  geom_text(
+    data = labels_minmax_2,
+    aes(label = count),
+    vjust = -1,
+    size = 5,
+    show.legend = FALSE
+  ) +
+  guides(
+    color = guide_legend(
+      override.aes = list(
+        linetype = 0,
+        shape = 20,
+        size = 10
+      )
+    )
+  )
+
+# violin plots - time per reason ------------------------------------------
+
+ 
