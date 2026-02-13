@@ -327,7 +327,7 @@ calls_per_interval <- focus_data %>%
     )
   )
 
-# Multiple line graph using .group = age_group
+# 2 line graph using age_group
 
 labels_minmax_2 <- calls_per_interval %>%
   group_by(age_group) %>%
@@ -414,6 +414,20 @@ ggplot(time_per_dispatch_violin_10, aes(x = age_group, y = EMSTotalCallTimeMin, 
 time_per_dispatch_violin_all <- focus_data %>% 
   select(PcrKey, dispatch_reason, age_group, EMSTotalCallTimeMin) %>% 
   group_by(dispatch_reason)
+
+time_per_dispatch_violin_all  %>% 
+  summarise(
+    n = n(),
+    Mean = mean(EMSTotalCallTimeMin, na.rm = TRUE),
+    Median = median(EMSTotalCallTimeMin, na.rm = TRUE),
+    Sd = sd(EMSTotalCallTimeMin, na.rm = TRUE),
+    Q1 = quantile(EMSTotalCallTimeMin, 0.25, na.rm = TRUE),
+    Q3 = quantile(EMSTotalCallTimeMin, 0.75, na.rm = TRUE),
+    Min = min(EMSTotalCallTimeMin, na.rm = TRUE),
+    Max = max(EMSTotalCallTimeMin, na.rm = TRUE)
+  ) %>%
+  arrange(desc(Median)) %>% 
+  print(n = Inf)
 
 pages <- ceiling(46 / 8)  # 8 per page
 
