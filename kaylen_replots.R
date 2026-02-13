@@ -3,6 +3,7 @@ library(ggplot2)
 library(lubridate)
 library(hms)
 library(scales)
+library(ggforce)
 
 # Source - https://stackoverflow.com/a/57157075
 # Posted by Tung
@@ -14,6 +15,7 @@ custom_theme <- theme(
   text = element_text(family = "Sans"),
   #rect = element_blank(),
   plot.title = element_text(size = 30, face = "bold"),
+  plot.subtitle = element_text(size = 18),
   # axis
   axis.title.x = element_text(size = 24, face = "bold", margin = margin(t = 30, b = 15)),
   axis.title.y = element_text(size = 24, face = "bold"),
@@ -87,25 +89,49 @@ calls_per_hour <- focus_data %>%
     )
   )
 
-ggplot(calls_per_hour, aes(x = unit_notified_hour, y = n, color = interval_per_8)) + 
-  geom_line(linewidth = 1, linetype = "dashed") + 
-  geom_point(size = 2) +
-  # scale_y_continuous(limits = c(0,125)) +
-  labs(
-    title = "Calls per interval using:  unit_notified_by_dispatch_datetime",
-    subtitle = "Count Time Series",
-    x = "Time", 
-    y = "Call Count",
-    color = "Time interval"
-  ) +
-  theme_light() +
-  geom_text(
-    aes(label = n),
+ggplot(calls_per_hour,
+       aes(x = unit_notified_hour,
+           y = n,
+           color = interval_per_8)) + 
+  geom_line(linewidth = 1.5) + 
+  geom_point(size = 4) +
+  scale_y_continuous(limits = c(0, 34000)) +
+  geom_label(
+    aes(label = n, fill = interval_per_8),
     vjust = -1,
-    size = 4,
-    color = "black"
+    size = 4.5,
+    fontface = "bold",
+    color = "white",
+    label.size = 0,
+    show.legend = FALSE
   ) +
-  custom_theme
+  scale_color_manual(values = c(
+    "00:00:00 - 07:59:00" = "#CC6677",
+    "08:00:00 - 15:59:00" = "#DDCC77",
+    "16:00:00 - 23:59:00" = "#6699CC"
+  )) +
+  scale_fill_manual(values = c(
+    "00:00:00 - 07:59:00" = "#CC6677",
+    "08:00:00 - 15:59:00" = "#DDCC77",
+    "16:00:00 - 23:59:00" = "#6699CC"
+  )) +
+  labs(
+    title = "Total 2024 EMS Calls Per Hour",
+    x = "Time", 
+    y = "Count",
+    color = NULL
+  ) +
+  theme_bw() +
+  custom_theme +
+  guides(
+    color = guide_legend(
+      override.aes = list(
+        linetype = 0,
+        shape = 16,
+        size = 6
+      )
+    )
+  )
 
 # year count time series --------------------------------------------------
 
@@ -144,53 +170,59 @@ ggplot(year_events, aes(x = unit_notified_by_dispatch_datetime, y = n)) +
 
 # Fill bar chart - top 10 dispatch reasons by hour ------------------------
 
-reason_per_age_group_and_hour <- focus_data %>% 
-  select(PcrKey, dispatch_reason, unit_notified_by_dispatch_datetime, age_group) %>% 
-  filter(dispatch_reason %in% top_10_dispatch_reasons) %>% 
-  mutate(unit_notified_time = as_hms(round_date(unit_notified_by_dispatch_datetime, "hour"))) %>% 
-  group_by(unit_notified_time, dispatch_reason, age_group) %>% 
-  summarize(count = n(), .groups = "drop") %>% 
-  group_by(unit_notified_time, age_group) %>% 
-  mutate(prop = count / sum(count)) %>% 
-  ungroup()
-  #   %>%
-  # mutate(
-  #   hour = hour(unit_notified_time),
-  #   interval_per_8 = hour %/% 8,
-  #   interval_per_8 = case_when(
-  #     interval_per_8 == 0 ~ "00:00:00 - 07:59:00", #00:00:00 - 07:59:00
-  #     interval_per_8 == 1 ~ "08:00:00 - 15:59:00", #08:00:00 - 15:59:00
-  #     interval_per_8 == 2 ~ "16:00:00 - 23:59:00", #16:00:00 - 23:59:00
-  #   )
-  # )
+reason_per_age_group_and_hour <- focus_data %>%
+  select(PcrKey, dispatch_reason, unit_notified_by_dispatch_datetime, age_group) %>%
+  filter(dispatch_reason %in% top_10_dispatch_reasons) %>%
+  mutate(unit_notified_time = as_hms(round_date(unit_notified_by_dispatch_datetime, "hour"))) %>%
+  group_by(unit_notified_time, dispatch_reason, age_group) %>%
+  summarize(count = n(), .groups = "drop") %>%
+  group_by(unit_notified_time, age_group) %>%
+  mutate(prop = count / sum(count)) %>%
+  ungroup() %>%
+  mutate(
+    hour = hour(unit_notified_time),
+    interval_per_8 = hour %/% 8,
+    interval_per_8 = case_when(
+      interval_per_8 == 0 ~ "00:00:00 - 07:59:00", #00:00:00 - 07:59:00
+      interval_per_8 == 1 ~ "08:00:00 - 15:59:00", #08:00:00 - 15:59:00
+      interval_per_8 == 2 ~ "16:00:00 - 23:59:00", #16:00:00 - 23:59:00
+    )
+  )
 
-# # Stacked bar chart - postion = "stack"
-# ggplot(na.omit(reason_per_age_group_and_hour), 
-#        aes(x = unit_notified_time, 
-#            y = count, 
-#            .group = dispatch_reason, 
-#            fill = dispatch_reason)) + 
-#   geom_vline(xintercept = c(28800, 28800 * 2), linetype = "dashed", color = "black", linewidth = 1) +
-#   geom_col(position = "stack") +
-#   scale_fill_manual(values = palette) +
-#   scale_y_continuous(labels = percent) +
-#   facet_wrap(~age_group) +
-#   theme_light() +
-#   theme(legend.position = "bottom",
-#         strip.background = element_rect(
-#           fill = "black"
-#         )) +
-#   labs(
-#     title = "Top 10 Dispacth Reasons At Each Hour",
-#     x = "Time",
-#     y = "Count",
-#     fill = NULL
-#   ) +
-#   geom_text(
-#     aes(label = count),
-#     position = position_stack(vjust = .5),
-#     color = "white"
-#   )
+# Stacked bar chart - postion = "stack"
+ggplot(na.omit(reason_per_age_group_and_hour),
+       aes(x = unit_notified_time,
+           y = count,
+           .group = dispatch_reason,
+           fill = dispatch_reason)) +
+  geom_vline(xintercept = c(28800, 28800 * 2), linetype = "dashed", color = "black", linewidth = 1) +
+  geom_col(position = "stack") +
+  scale_fill_manual(values = palette_12) +
+  facet_wrap(~age_group) +
+  scale_x_time(labels = label_time(format = "%H:%M")) +
+  theme_light() +
+  theme(legend.position = "bottom",
+        strip.background = element_rect(
+          fill = "black"
+        )) +
+  labs(
+    title = "Top 10 EMS Dispacth Reasons At Each Hour",
+    x = "Time",
+    y = "Count",
+    fill = NULL
+  ) +
+  geom_text(
+    aes(label = count),
+    position = position_stack(vjust = .5),
+    color = "white"
+  ) +
+  custom_theme +
+  theme(
+    strip.background = element_rect(fill = "black"),
+    strip.text = element_text(size = 18, face = "bold", color = "white"),
+    # margin: (top, right, bottom, left, unit)
+    plot.margin = margin(10, 10, 10, 10, "mm")
+  )
 
 # Proportional - position = "fill"
 ggplot(reason_per_age_group_and_hour, 
@@ -199,6 +231,7 @@ ggplot(reason_per_age_group_and_hour,
            fill = dispatch_reason)) + 
   geom_col(position = "fill") +
   scale_y_continuous(labels = scales::percent) +
+  scale_x_time(labels = label_time(format = "%H:%M")) +
   scale_fill_manual(values = palette_12) +
   facet_wrap(~age_group, ncol = 2) +
   theme_classic() +
@@ -282,6 +315,8 @@ calls_per_interval <- focus_data %>%
   select(PcrKey, unit_notified_by_dispatch_datetime, age_group) %>% 
   mutate(unit_notified_hour = round_date(unit_notified_by_dispatch_datetime, "hour")) %>% 
   mutate(unit_notified_time = as_hms(unit_notified_hour)) %>% 
+  group_by(unit_notified_time, age_group) %>% 
+  summarise(count = n(), .groups = "drop") %>% 
   mutate(
     hour = hour(unit_notified_time),
     interval_per_8 = hour %/% 8,
@@ -290,69 +325,7 @@ calls_per_interval <- focus_data %>%
       interval_per_8 == 1 ~ "08:00:00 - 15:59:00", #08:00:00 - 15:59:00
       interval_per_8 == 2 ~ "16:00:00 - 23:59:00", #16:00:00 - 23:59:00
     )
-  ) %>% 
-  group_by(unit_notified_time, age_group) %>% 
-  summarise(count = n(), .groups = "drop")
-
-labels_minmax_2 <- calls_per_interval %>%
-  group_by(age_group, unit_notified_time) %>%
-  filter(count == max(count) | count == min(count))
-
-ggplot(calls_per_interval, aes(x = unit_notified_time, y = count, .group = age_group, color = age_group)) + 
-  geom_line(linewidth = 1, linetype = "dashed") +
-  geom_point(size = 2) +
-  labs(
-    title = "Calls per interval using:  unit_notified_by_dispatch_datetime",
-    subtitle = "Count Time Series",
-    x = "Time", 
-    y = "Call Count",
-    color = NULL
-  ) +
-  theme_bw() +
-  geom_text(
-    aes(label = count, 
-        color = age_group),
-    vjust = -1,
-    size = 5
-  ) +
-  geom_vline(xintercept = c(28800, 28800 * 2), linetype = "dashed") +
-  custom_theme +
-  geom_text(
-    data = labels_minmax_2,
-    aes(label = count),
-    vjust = -1,
-    size = 5,
-    show.legend = FALSE
-  ) +
-  guides(
-    color = guide_legend(
-      override.aes = list(
-        linetype = 0,
-        shape = 20,
-        size = 10
-      )
-    )
   )
-
-ggplot(calls_per_interval, aes(x = unit_notified_time, y = count, color = interval_per_8)) + 
-  geom_line(linewidth = 1, linetype = "dashed") + 
-  geom_point(size = 2) +
-  facet_wrap(~as.factor(age_group)) + # Should stack charts in rows instead of having columns tbh.
-  labs(
-    title = "Calls per interval using:  unit_notified_by_dispatch_datetime",
-    subtitle = "Count Time Series",
-    x = "Time", 
-    y = "Call Count",
-    color = "Time interval"
-  ) +
-  theme_bw() +
-  geom_text(
-    aes(label = count),
-    vjust = -1,
-    size = 4,
-    color = "black"
-  ) +
-  custom_theme
 
 # Multiple line graph using .group = age_group
 
@@ -362,9 +335,9 @@ labels_minmax_2 <- calls_per_interval %>%
   ungroup()
 
 ggplot(calls_per_interval, aes(x = unit_notified_time, y = count, color = age_group)) + 
-  geom_line(linewidth = 1.5, linetype = "dashed") +
-  geom_point(size = 2) +
-  scale_y_continuous(limits = c(0, 17000), breaks = seq(0, 18000, by = 2500), minor_breaks = seq(0, 18000, by = 1000)) +
+  geom_line(linewidth = 1.5) +
+  geom_point(size = 4) +
+  scale_y_continuous(limits = c(0, 17000), breaks = seq(0, 18000, by = 2500)) +
   labs(
     title = "EMS Notifications Per Hour",
     x = "Time", 
@@ -393,4 +366,83 @@ ggplot(calls_per_interval, aes(x = unit_notified_time, y = count, color = age_gr
 
 # violin plots - time per reason ------------------------------------------
 
- 
+time_per_dispatch_violin_10 <- focus_data %>% 
+  select(PcrKey, dispatch_reason, age_group, EMSTotalCallTimeMin) %>% 
+  filter(dispatch_reason %in% top_10_dispatch_reasons) %>%
+  group_by(dispatch_reason)
+
+time_per_dispatch_violin_10  %>% 
+  summarise(
+    n = n(),
+    Mean = mean(EMSTotalCallTimeMin, na.rm = TRUE),
+    Median = median(EMSTotalCallTimeMin, na.rm = TRUE),
+    Sd = sd(EMSTotalCallTimeMin, na.rm = TRUE),
+    Q1 = quantile(EMSTotalCallTimeMin, 0.25, na.rm = TRUE),
+    Q3 = quantile(EMSTotalCallTimeMin, 0.75, na.rm = TRUE),
+    Min = min(EMSTotalCallTimeMin, na.rm = TRUE),
+    Max = max(EMSTotalCallTimeMin, na.rm = TRUE)
+  ) %>%
+  arrange(desc(Median)) %>% 
+  print(n = Inf)
+
+ggplot(time_per_dispatch_violin_10, aes(x = age_group, y = EMSTotalCallTimeMin, fill = age_group)) +
+  geom_violin(width = .8) +
+  geom_boxplot(width = .6, alpha = 0.2, outliers = F) +
+  facet_wrap(~dispatch_reason, ncol = 2) +
+  coord_flip() +
+  scale_y_continuous(limits = c(0, 250), n.breaks = 5) +
+  labs(
+    title = "Total Time to Resolve Per Dispatch Reason",
+    subtitle = "Only Displaying Top 10 Dispatch Reasons",
+    x = NULL,
+    y = "Minutes",
+    fill = NULL
+  ) +
+  theme_light() +
+  custom_theme +
+  theme(
+    strip.background = element_rect(fill = "black"),
+    strip.text = element_text(size = 18, face = "bold", color = "white"),
+    # margin: (top, right, bottom, left, unit)
+    plot.margin = margin(10, 10, 10, 10, "mm"),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank()
+  )
+
+# ALL DISPATCH REASONS
+
+time_per_dispatch_violin_all <- focus_data %>% 
+  select(PcrKey, dispatch_reason, age_group, EMSTotalCallTimeMin) %>% 
+  group_by(dispatch_reason)
+
+pages <- ceiling(46 / 8)  # 8 per page
+
+for (i in 1:pages) {
+  print(
+    ggplot(time_per_dispatch_violin_all,
+           aes(x = age_group, y = EMSTotalCallTimeMin, fill = age_group)) +
+      geom_violin(width = .8) +
+      geom_boxplot(width = .6, alpha = 0.2, outlier.shape = NA) +
+      facet_wrap_paginate(~dispatch_reason, ncol = 2, nrow = 4, page = i) +
+      coord_flip() +
+      scale_y_continuous(limits = c(0, 250), n.breaks = 5) +
+      labs(
+        title = "Total Time to Resolve Per Dispatch Reason",
+        subtitle = paste("Page", i),
+        x = NULL,
+        y = "Minutes",
+        fill = NULL
+      ) +
+      theme_light() +
+      custom_theme +
+      theme(
+        strip.background = element_rect(fill = "black"),
+        strip.text = element_text(size = 18, face = "bold", color = "white"),
+        # margin: (top, right, bottom, left, unit)
+        plot.margin = margin(10, 10, 10, 10, "mm"),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank()
+      )
+  )
+}
+
