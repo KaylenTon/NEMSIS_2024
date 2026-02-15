@@ -4,12 +4,12 @@ library(ggplot2)
 library(mgsub)
 
 merge_duplicates <- function(last_check = FALSE) {
+  # Retrieve duplicates from clean_NA
   dupe_pcrkeys <- clean_NA$PcrKey[duplicated(clean_NA$PcrKey)]
   duplicates <- clean_NA %>%
     filter(PcrKey %in% dupe_pcrkeys)
-  nrow(duplicates)
   
-  #check which columns have conflicting values that are causing duplicate PcrKeys
+  #find_diffs checks which columns have conflicting values that are causing duplicate PcrKeys
   #example: 
   #         PcrKey | e1 | e2 | e3
   #         123     1     1     2
@@ -37,7 +37,7 @@ merge_duplicates <- function(last_check = FALSE) {
     separate_rows(diff_cols, sep = ";\\s*") %>% #break values with ";" into two rows
     count(diff_cols, sort = TRUE) #counts the number of each unique value in "diff_cols"
   
-  ## GET COLUMNS CAUSING DUPLICATES ONLY
+  ## Retrieve only the columns causing duplicate PcrKeys
   
   dupe_cols <- c("PcrKey", frequency_tbl$diff_cols) #just get the names of the duplicate columns
   dupe_cols_only <- duplicates[, (colnames(duplicates) %in% dupe_cols)] #subset the duplicates table with the names from "dupe_cols"
@@ -51,11 +51,7 @@ merge_duplicates <- function(last_check = FALSE) {
   dupe_col_names <- colnames(dupe_cols_only)
   
   
-  #write.csv(dupe_cols_only, "rowcols_only_of_pcrkey_dupes.csv", row.names = FALSE)
-  #write.csv(frequency_tbl, "pcrkey_dupes_frequency_tbl.csv", row.names = FALSE) 
-  
-  
-  ## COMBINE CONFLICTING VALS INTO ONE PCRKEY
+  ## Combine conflicting values into one PcrKey (pasting together with "_" into a string)
   
   clean_str <- function(x) {
     x %>%
@@ -70,7 +66,7 @@ merge_duplicates <- function(last_check = FALSE) {
                   .fns = ~clean_str(.)))
   
   # dt <- dupe_cols_only[grepl('datetime_of_destination_prearrival_alert_or_activation', dupe_cols_only$diff_cols),]
-  #date time and destination pre-arrival alert are correlated. We probably only care about the latest date, so let's just keep the last date record for each duplicated PcrKey
+  # date time and destination pre-arrival alert are correlated. We probably only care about the latest date, so let's just keep the last date record for each duplicated PcrKey
   dupe_col_names <- dupe_col_names[!dupe_col_names %in% c("PcrKey", "diff_cols")]
   
   dupe_cols_mer <- dupe_cols_cln %>%
@@ -102,12 +98,12 @@ merge_duplicates <- function(last_check = FALSE) {
         .fns = ~first(na.omit(.))
       ),
       .groups = "drop")
-  #subset(select = -c(diff_cols))
   
-  #combine datasets together
+  # Combine clean_NA and dupe_cols_mer together
   
+  # Remove all duplicated keys from the clean_NA so we can replace it with the rows from dupe_cols_mer
   clean_NA_drop <- clean_NA %>%
-    filter(!PcrKey %in% dupe_pcrkeys) #removing all duplicated keys from the clean_NA
+    filter(!PcrKey %in% dupe_pcrkeys)
   
   final_clean_NA <- bind_rows(clean_NA_drop, dupe_cols_mer)
   
@@ -133,7 +129,6 @@ merge_duplicates <- function(last_check = FALSE) {
     
     return(final_clean_NA)
 }
-
 
 final_clean_NA <- merge_duplicates()
 
