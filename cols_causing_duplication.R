@@ -4,12 +4,12 @@ library(ggplot2)
 library(mgsub)
 
 merge_duplicates <- function(last_check = FALSE) {
-  # Retrieve duplicates from clean_NA
+  # Retrieve duplicate PcrKeys from clean_NA
   dupe_pcrkeys <- clean_NA$PcrKey[duplicated(clean_NA$PcrKey)]
   duplicates <- clean_NA %>%
     filter(PcrKey %in% dupe_pcrkeys)
   
-  #find_diffs checks which columns have conflicting values that are causing duplicate PcrKeys
+  #find_diffs() checks which columns have conflicting values that are causing duplicate PcrKeys
   #example: 
   #         PcrKey | e1 | e2 | e3
   #         123     1     1     2
@@ -20,6 +20,7 @@ merge_duplicates <- function(last_check = FALSE) {
   #         123     1     1     2   e1; e3
   #         123     1     1     2   e1; e3
   #         123     2     1     3   e1; e3
+  #explanation: diff_cols is e1; e3 because e1 and e3 have conflicting values (2 and 3) for PcrKey 123
   
   find_diffs <- function(df) {
     varying <- names(Filter(function(col) n_distinct(col) > 1, df)) #keep col that has more than 1 unique value (i.e., all values for that col are NOT the same)
@@ -65,8 +66,7 @@ merge_duplicates <- function(last_check = FALSE) {
     mutate(across(.cols = all_of(dupe_col_names) & where(is.character),
                   .fns = ~clean_str(.)))
   
-  # dt <- dupe_cols_only[grepl('datetime_of_destination_prearrival_alert_or_activation', dupe_cols_only$diff_cols),]
-  # date time and destination pre-arrival alert are correlated. We probably only care about the latest date, so let's just keep the last date record for each duplicated PcrKey
+
   dupe_col_names <- dupe_col_names[!dupe_col_names %in% c("PcrKey", "diff_cols")]
   
   dupe_cols_mer <- dupe_cols_cln %>%
@@ -99,7 +99,7 @@ merge_duplicates <- function(last_check = FALSE) {
       ),
       .groups = "drop")
   
-  # Combine clean_NA and dupe_cols_mer together
+  ## Combine clean_NA and dupe_cols_mer together
   
   # Remove all duplicated keys from the clean_NA so we can replace it with the rows from dupe_cols_mer
   clean_NA_drop <- clean_NA %>%
@@ -108,27 +108,39 @@ merge_duplicates <- function(last_check = FALSE) {
   final_clean_NA <- bind_rows(clean_NA_drop, dupe_cols_mer)
   
   if(last_check){
-    #check if date times are correct
-    dupe_cols_mer[dupe_cols_mer$PcrKey == 290693410,]$datetime_of_destination_prearrival_alert_or_activation
-    max(dt[dt$PcrKey == 290693410,]$datetime_of_destination_prearrival_alert_or_activation)
     
     clean_Na_distinct <- clean_NA %>%
       distinct(PcrKey, .keep_all = TRUE)
     
-    nrow(clean_NA_drop)
-    nrow(clean_Na_distinct)
-    nrow(dupe_cols_mer) + nrow(clean_NA_drop)
+    paste("Distinct of clean_NA is equal to the nrow of dropped rows of duplicate PcrKeys + nrow of merged PcrKeys (If not TRUE, fix dupe_cols_mer):", nrow(clean_Na_distinct) == nrow(dupe_cols_mer) + nrow(clean_NA_drop))
     
     # final check to make sure merge went properly
     leaked_dupes <- final_clean_NA %>%
       count(PcrKey) %>%
       filter(n > 1)
-    nrow(leaked_dupes) 
+    paste("Duplicated values in final_clean_NA (If not 0, fix dupe_cols_mer):",nrow(leaked_dupes))
     
   }
     
     return(final_clean_NA)
 }
 
-final_clean_NA <- merge_duplicates()
+dupe_check <- function(final_df) {
+  clean_Na_distinct <- clean_NA %>%
+    distinct(PcrKey, .keep_all = TRUE)
+  
+  # final check to make sure merge went properly
+  leaked_dupes <- final_clean_NA %>%
+    count(PcrKey) %>%
+    filter(n > 1)
+  cat("Duplicated values in final_clean_NA (If not 0, fix dupe_cols_mer in merge_duplicates()):",
+      nrow(leaked_dupes),
+      "Distinct of clean_NA is equal to the nrow of dropped rows of duplicate PcrKeys + nrow of merged PcrKeys (If not TRUE, fix dupe_cols_mer in merge_duplicates()):", 
+      nrow(clean_Na_distinct) == nrow(dupe_cols_mer) + nrow(clean_NA_drop), 
+      sep = "\n")
+  
+}
 
+# sample function runs:
+#final_clean_NA <- merge_duplicates(last_check = TRUE)
+#dupe_check(final_clean_NA)
