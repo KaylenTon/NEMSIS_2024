@@ -3,7 +3,7 @@ This is the GitHub repository for **Dr. Hagen's BDA Lab NEMSIS Project (2026).**
 # Get Started
 1. Always begin by creating a branch and pulling from master. Do **not** work directly on the master branch. <br />
 2. Click "cleaningDataFileObjects.RData" to import the sampled PcrKeys and list of variables. Learn more about NEMSIS variables [here](https://nemsis.org/media/nemsis_v3/release-3.5.0/DataDictionary/PDFHTML/EMSDEMSTATE/index.html). <br />
-3. Run up to and including line 170 (renaming clean_NA)<br />
+3. In "data_cleaning.R", run up to and including line 170 (renaming clean_NA)<br />
 <br />
 Now, you will have the cleaned NEMSIS DataFrame to begin data analysis.<br />
 
