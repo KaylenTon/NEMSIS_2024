@@ -179,20 +179,6 @@ dupe_cols_only <- dupe_cols_only %>%
               distinct(PcrKey, .keep_all = TRUE), by = "PcrKey") %>% #select only the distinct PcrKey values (remove duplicates and just keep the reasons)
   filter(diff_cols != "")
 
-#calculate kl divergence for each col
-calc_probdist <- function(df){
-  df %>%
-    pivot_longer(-any_of(c("PcrKey","diff_cols")), values_transform = list(value = as.character)) %>%
-    count(name, value) %>%
-    group_by(name) %>%
-    mutate(prob = n/sum(n)) %>%
-    ungroup()
-}
-
-orig_p_dist <- calc_probdist(dupe_cols_only)
-  
-
-#grab the unique values for each column and calculate probability distributionfinal
 
 dupe_col_names <- colnames(dupe_cols_only)
 
@@ -236,7 +222,8 @@ dupe_cols_mer <- dupe_cols_cln %>%
     
     #merge all other rows duplicated by PcrKey together
     across(.cols = where(is.character) & -any_of(c("PcrKey","diff_cols")),
-           .fns = ~paste(unique(na.omit(.)), collapse = "_")),
+           .fns = ~paste(sort(unique(na.omit(.))), collapse = "_")),
+    
     #keep original col types of other cols
     across(
       .cols = !where(is.character) & -any_of(c("PcrKey", "dt_of_dpaa_duration", "datetime_of_destination_prearrival_alert_or_activation")),
@@ -252,3 +239,22 @@ clean_NA_drop <- clean_NA %>%
 
 final_clean_NA <- bind_rows(clean_NA_drop, dupe_cols_mer)
 
+
+#calculate kl divergence for each col
+calc_probdist <- function(df){
+  df %>%
+    pivot_longer(any_of(dupe_col_names), values_transform = list(value = as.character)) %>%
+    count(name, value) %>%
+    group_by(name) %>%
+    mutate(prob = n/sum(n)) %>%
+    ungroup()
+}
+
+orig_p_dist <- calc_probdist(clean_NA)
+orig_p_dist <- orig_p_dist$prob
+
+q_dist <- calc_probdist(final_clean_NA)
+q_dist <- q_dist$prob
+
+x <- rbind(orig_p_dist, q_dist)
+KL(x, unit = 'log')
