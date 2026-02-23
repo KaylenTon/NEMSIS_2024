@@ -240,21 +240,57 @@ clean_NA_drop <- clean_NA %>%
 final_clean_NA <- bind_rows(clean_NA_drop, dupe_cols_mer)
 
 
+
+codes_NA <- codes_NA %>%
+  rename(
+    dispatch_reason = eDispatch_01,
+    EMD_performed = eDispatch_02,
+    acuity_upon_EMS_release_of_patient = eDisposition_19,
+    EMS_transport_method = eDisposition_16,
+    type_of_destination = eDisposition_21,
+    hospital_in_patient_destination = eDisposition_22,
+    level_of_care_provided_per_protocol = eDisposition_32,
+    unit_disposition = eDisposition_27,
+    patient_evaluation_care = eDisposition_28,
+    crew_disposition = eDisposition_29,
+    transport_disposition = eDisposition_30,
+    transport_mode_from_scene = eDisposition_17,
+    datetime_of_destination_prearrival_alert_or_activation = eDisposition_25,
+    destination_team_prearrival_alert_or_activation = eDisposition_24,
+    type_of_service_requested = eResponse_05,
+    unit_transport_and_equipment_capability = eResponse_07,
+    response_mode_to_scene = eResponse_23,
+    type_of_turn_around_delay= eResponse_12,
+    type_of_scene_delay = eResponse_10,
+    type_of_response_delay = eResponse_09,
+    PSAP_call_datetime = eTimes_01,
+    unit_notified_by_dispatch_datetime = eTimes_03,
+    unit_en_route_datetime = eTimes_05,
+    unit_arrived_on_scene_datetime = eTimes_06,
+    arrived_at_patient_datetime = eTimes_07,
+    unit_left_scene_datetime = eTimes_09,
+    patient_arrived_at_destination_datetime = eTimes_11,
+    destination_patient_transfer_of_care_datetime = eTimes_12,
+    unit_back_in_service_datetime = eTimes_13,
+    patient_age = ePatient_15,
+    patient_age_units = ePatient_16,
+    patient_race = ePatient_14)
+
 #calculate kl divergence for each col
 calc_probdist <- function(df){
-  df %>%
+  df <- codes_NA %>%
+    select(any_of(c("PcrKey",dupe_col_names))) %>%
     pivot_longer(any_of(dupe_col_names), values_transform = list(value = as.character)) %>%
+    distinct() %>%
     count(name, value) %>%
     group_by(name) %>%
     mutate(prob = n/sum(n)) %>%
     ungroup()
+  
 }
 
-orig_p_dist <- calc_probdist(clean_NA)
+orig_p_dist <- calc_probdist(codes_NA)
 orig_p_dist <- orig_p_dist$prob
 
 q_dist <- calc_probdist(final_clean_NA)
 q_dist <- q_dist$prob
-
-x <- rbind(orig_p_dist, q_dist)
-KL(x, unit = 'log')
