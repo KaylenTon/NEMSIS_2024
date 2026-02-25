@@ -46,6 +46,19 @@ frequency_tbl <- dupe_cols_df %>%
   separate_rows(diff_cols, sep = ";\\s*") %>% #break values with ";" into two rows
   count(diff_cols, sort = TRUE) #counts the number of each unique value in "diff_cols"
 
+dupe_example <- dupe_cols_df %>%
+  filter(PcrKey == "282501085") %>%
+  subset(select = c(PcrKey, 	
+                    datetime_of_destination_prearrival_alert_or_activation, 	
+                    destination_team_prearrival_alert_or_activation, diff_cols))
+
+frq_ex <- dupe_cols_df %>%
+  filter(diff_cols != "") %>% #remove rows with no value in the "diffs_col" column (not a duplicate)
+  separate_rows(diff_cols, sep = ";\\s*") %>% #break values with ";" into two rows
+  filter(PcrKey == "282501085") %>%
+  subset(select = c(PcrKey, 	
+                    datetime_of_destination_prearrival_alert_or_activation, 	
+                    destination_team_prearrival_alert_or_activation, diff_cols))
 
 ## Retrieve only the columns causing duplicate PcrKeys
 
