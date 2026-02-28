@@ -186,3 +186,10 @@ orig_p_dist <- orig_p_dist$prob
 
 q_dist <- calc_probdist(final_clean_NA)
 q_dist <- q_dist$prob
+
+test <- clean_NA %>%
+  filter(
+    type_of_service_requested == "Emergency Response (Primary Response Area)",
+    response_mode_to_scene == "Emergent (Immediate Response)"
+  ) %>% 
+  select(-c(type_of_service_requested, response_mode_to_scene))
