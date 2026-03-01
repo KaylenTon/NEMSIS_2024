@@ -584,10 +584,12 @@ clean_NA <- clean_NA %>%
 
 # TO MERGE DUPLICATE PCRKEY AND KEEP ALL COL INFORMATION:
 source("cols_causing_duplication.R")
-#call merge_duplicates from cols_causing_duplication.R:
-final_clean_NA <- merge_duplicates()
+#replace conflicting columns causing duplication with "Multiple" and keep max datetime_of_...
+dupe_cols_df <- preprocess_merge()
+final_clean_NA <- paste_by_multiple(dupe_cols_df)
 #check for no leaked duplicates in final_clean_NA
 dupe_check(final_clean_NA)
+
 
 # Location table ----------------------------------------------------------
 

@@ -4,7 +4,7 @@ library(ggplot2)
 library(mgsub)
 library(philentropy)
 
-merge_duplicates <- function() {
+preprocess_merge <- function(){
   # Retrieve duplicate PcrKeys from clean_NA
   dupe_pcrkeys <- clean_NA$PcrKey[duplicated(clean_NA$PcrKey)]
   duplicates <- clean_NA %>%
@@ -33,6 +33,11 @@ merge_duplicates <- function() {
     mutate(diff_cols = find_diffs(pick(everything()))) %>% #creates "diff_col" column, grabs all data for that specific PcrKey and applies the "find_diffs" function
     ungroup()
   
+  return(dupe_cols_df)
+}
+  
+## COMBINE WITH "_"
+paste_by_underscore <- function(dupe_cols_df) {
   frequency_tbl <- dupe_cols_df %>%
     distinct(PcrKey, .keep_all= TRUE) %>%
     filter(diff_cols != "") %>% #remove rows with no value in the "diffs_col" column (not a duplicate)
@@ -52,6 +57,23 @@ merge_duplicates <- function() {
   
   dupe_col_names <- colnames(dupe_cols_only)
   
+  
+  ## Combine conflicting values into one PcrKey (pasting together with "_" into a string)
+  
+  clean_str <- function(x) {
+    x %>%
+      str_remove_all("Yes|e.g\\.|,|\\(|\\)") %>% 
+      str_replace_all("/|\\-|or| ", "_") %>%
+      str_replace_all("_+", "_") %>%
+      str_trim()
+  }
+  
+  dupe_cols_cln <- dupe_cols_df %>%
+    mutate(across(.cols = all_of(dupe_col_names) & where(is.character),
+                  .fns = ~clean_str(.)))
+  
+  
+  dupe_col_names <- dupe_col_names[!dupe_col_names %in% c("PcrKey", "diff_cols")]
   
   ## Combine conflicting values into one PcrKey (pasting together with "_" into a string)
   
@@ -111,6 +133,89 @@ merge_duplicates <- function() {
     return(final_clean_NA)
 }
 
+## REPLACE DUPLICATE VALUES WITH "MULTIPLE"
+paste_by_multiple <- function(dupe_cols_df) {
+  frequency_tbl <- dupe_cols_df %>%
+    distinct(PcrKey, .keep_all= TRUE) %>%
+    filter(diff_cols != "") %>%
+    separate_rows(diff_cols, sep = ";\\s*") %>% 
+    count(diff_cols, sort = TRUE) 
+  
+  ## Retrieve only the columns causing duplicate PcrKeys
+  
+  dupe_cols <- c("PcrKey", frequency_tbl$diff_cols) 
+  dupe_cols_only <- duplicates[, (colnames(duplicates) %in% dupe_cols)] 
+  
+  dupe_cols_only <- dupe_cols_only %>%
+    left_join(dupe_cols_df %>% 
+                select(PcrKey, diff_cols)%>% 
+                distinct(PcrKey, .keep_all = TRUE), by = "PcrKey") %>% 
+    filter(diff_cols != "")
+  
+  dupe_col_names <- colnames(dupe_cols_only)
+  dupe_col_names <- dupe_col_names[!dupe_col_names %in% c("PcrKey", "diff_cols")]
+  
+  ## Combine conflicting values into one PcrKey (pasting together with "_" into a string)
+  
+  clean_str <- function(x) {
+    x %>%
+      str_remove_all("Yes|e.g\\.|,|\\(|\\)") %>% 
+      str_replace_all("/|\\-|or| ", "_") %>%
+      str_replace_all("_+", "_") %>%
+      str_trim()
+  }
+  
+  dupe_cols_cln <- dupe_cols_df %>%
+    mutate(across(.cols = all_of(dupe_col_names) & where(is.character),
+                  .fns = ~clean_str(.)))
+  
+  
+  dupe_col_names <- dupe_col_names[!dupe_col_names %in% c("PcrKey", "diff_cols", "datetime_of_destination_prearrival_alert_or_activation")]
+  
+  collapsed_clean_NA <- dupe_cols_df %>%
+    group_by(PcrKey) %>%
+    summarise(
+      dt_of_dpaa_duration = if(all(is.na(datetime_of_destination_prearrival_alert_or_activation))) {
+        as.numeric(NA)
+      } else {
+        max_date <- max(datetime_of_destination_prearrival_alert_or_activation, na.rm = TRUE)
+        min_date <- min(datetime_of_destination_prearrival_alert_or_activation, na.rm = TRUE)
+        
+        as.numeric(difftime(max_date, min_date, units = "secs"))
+      },
+      
+      #save only the max (most recent) date for datetime
+      datetime_of_destination_prearrival_alert_or_activation = if(all(is.na(datetime_of_destination_prearrival_alert_or_activation))) {
+        as.POSIXct(NA)
+      }else{
+        max(datetime_of_destination_prearrival_alert_or_activation, na.rm = TRUE) 
+      },
+      
+      across(
+        all_of(dupe_col_names), ~ {unique_vals <- unique(na.omit(.x))
+        
+        if(length(unique_vals > 1)){
+          "Multiple"
+        } else if (length(unique_vals) == 1) {
+          as.character(unique_vals)
+        } else {
+          NA_character_
+        }
+        }),
+      .groups = "drop")
+  
+  ## Combine clean_NA and collapse_clean_NA together
+  
+  # Remove all duplicated keys from the clean_NA so we can replace it with the rows from dupe_cols_mer
+  clean_NA_drop <- clean_NA %>%
+    filter(!PcrKey %in% dupe_pcrkeys)
+  
+  final_clean_NA <- bind_rows(clean_NA_drop, collapsed_clean_NA)
+  
+  return(final_clean_NA)
+}
+
+## CHECK FOR LEFT OVER DUPLICATES
 dupe_check <- function(final_df) {
   clean_Na_distinct <- clean_NA %>%
     distinct(PcrKey, .keep_all = TRUE)
@@ -121,12 +226,9 @@ dupe_check <- function(final_df) {
     filter(n > 1)
   cat("Duplicated values in final_clean_NA (If not 0, fix dupe_cols_mer in merge_duplicates()):",
       nrow(leaked_dupes),
-      "Distinct of clean_NA is equal to the nrow of dropped rows of duplicate PcrKeys + nrow of merged PcrKeys (If not TRUE, fix dupe_cols_mer in merge_duplicates()):", 
+      "Distinct of clean_NA is equal to the nrow of dropped rows of duplicate PcrKeys + nrow of merged PcrKeys:", 
       nrow(clean_Na_distinct) == nrow(dupe_cols_mer) + nrow(clean_NA_drop), 
       sep = "\n")
   
 }
 
-# sample function runs:
-#final_clean_NA <- merge_duplicates(last_check = TRUE)
-#dupe_check(final_clean_NA)
