@@ -141,6 +141,11 @@ final_clean_NA <- bind_rows(clean_NA_drop, dupe_cols_mer)
 
 
 
+
+
+
+
+
 ### NEW FUNCTION: Duplicate values turn into "Mixed"
 
 
@@ -312,9 +317,9 @@ frequency_tbl_mult <- check_clean_NA %>%
   group_by(column_name) %>%
   summarise(
     total = n(),
-    multiple = sum(status == "Multiple", na.rm = TRUE),
-    prob_multiple = multiple / total,
+    labelled_multiple = sum(status == "Multiple", na.rm = TRUE),
+    proportion_lab_multiple = labelled_multiple / total,
     .groups = "drop"
   ) %>%
-  arrange(desc(prob_multiple))
-sum(frequency_tbl_mult$prob_multiple) #12% data lost
+  arrange(desc(proportion_lab_multiple))
+sum(frequency_tbl_mult$proportion_lab_multiple) #3% data lost
