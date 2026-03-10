@@ -2,7 +2,6 @@ library(dplyr)
 library(tidyverse)
 library(ggplot2)
 library(mgsub)
-library(philentropy)
 
   
 ## COMBINE WITH "_"
