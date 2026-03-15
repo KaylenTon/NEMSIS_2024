@@ -110,6 +110,10 @@ paste_by_underscore <- function() {
   
   final_clean_NA <- bind_rows(clean_NA_drop, dupe_cols_mer)
   
+  #### Check for left over duplicates
+  clean_Na_distinct <- clean_NA %>%
+    distinct(PcrKey, .keep_all = TRUE)
+  
   # final check to make sure merge went properly
   leaked_dupes <- final_clean_NA %>%
     count(PcrKey) %>%

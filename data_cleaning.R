@@ -585,7 +585,7 @@ clean_NA <- clean_NA %>%
 # TO MERGE DUPLICATE PCRKEY:
 source("cols_causing_duplication.R")
 #replace conflicting columns causing duplication with "Multiple" and keep max datetime_of_...
-final_clean_NA <- paste_by_multiple()
+final_clean_NA <- paste_by_underscore()
 
 
 # Location table ----------------------------------------------------------
