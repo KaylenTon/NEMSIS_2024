@@ -582,12 +582,11 @@ clean_NA <- clean_NA %>%
     age_interval_group = factor(age_interval_group, levels = c("0-4", "5-9", "10-14", "15-19", "20-24", "25-29", "30-34", "35-39", "40-44", "45-49", "50-54", "55-59", "60-64", "65-69", "70-74", "75-79", "80-84", "85+"))
   )
 
-# TO MERGE DUPLICATE PCRKEY AND KEEP ALL COL INFORMATION:
+# TO MERGE DUPLICATE PCRKEY:
 source("cols_causing_duplication.R")
-#call merge_duplicates from cols_causing_duplication.R:
-final_clean_NA <- merge_duplicates()
-#check for no leaked duplicates in final_clean_NA
-dupe_check(final_clean_NA)
+#replace conflicting columns causing duplication with "Multiple" and keep max datetime_of_...
+final_clean_NA <- paste_by_underscore()
+
 
 # Location table ----------------------------------------------------------
 
