@@ -35,6 +35,7 @@ dupe_cols_df <- duplicates %>%
   mutate(diff_cols = find_diffs(pick(everything()))) %>% #creates "diff_col" column, grabs all data for that specific PcrKey and applies the "find_diffs" function
   ungroup()
 
+#OLD: keeps only one PcrKey to count the number of times duplicate appears
 # frequency_tbl <- dupe_cols_df %>%
 #   distinct(PcrKey, .keep_all= TRUE) %>%
 #   filter(diff_cols != "") %>% #remove rows with no value in the "diffs_col" column (not a duplicate)
@@ -75,7 +76,7 @@ dupe_cols_only <- duplicates[, (colnames(duplicates) %in% dupe_cols)] #subset th
 
 dupe_cols_only <- dupe_cols_only %>%
   left_join(dupe_cols_df %>% #join this to the dupe_cols_only df
-              select(PcrKey, diff_cols)%>% #get just the PcrKey col and "diff_col" row
+              dplyr::select(PcrKey, diff_cols) %>% #get just the PcrKey col and "diff_col" row
               distinct(PcrKey, .keep_all = TRUE), by = "PcrKey") %>% #select only the distinct PcrKey values (remove duplicates and just keep the reasons)
   filter(diff_cols != "")
 
@@ -99,6 +100,11 @@ dupe_cols_cln <- dupe_cols_df %>%
 
 
 dupe_col_names <- dupe_col_names[!dupe_col_names %in% c("PcrKey", "diff_cols")]
+
+#apply cleaning function to clean_NA too where duplicated column
+clean_NA <- clean_NA %>%
+  mutate(across(.cols = all_of(dupe_col_names) & where(is.character),
+                .fns = ~clean_str(.)))
 
 dupe_cols_mer <- dupe_cols_cln %>%
   group_by(PcrKey) %>%

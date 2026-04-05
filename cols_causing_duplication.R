@@ -47,7 +47,7 @@ paste_by_underscore <- function() {
   
   dupe_cols_only <- dupe_cols_only %>%
     left_join(dupe_cols_df %>% 
-                select(PcrKey, diff_cols)%>% 
+                dplyr::select(PcrKey, diff_cols)%>% 
                 distinct(PcrKey, .keep_all = TRUE), by = "PcrKey") %>% 
     filter(diff_cols != "")
   
@@ -69,7 +69,9 @@ paste_by_underscore <- function() {
     mutate(across(.cols = all_of(dupe_col_names) & where(is.character),
                   .fns = ~clean_str(.)))
   
-
+  clean_NA <- clean_NA %>%
+    mutate(across(.cols = all_of(dupe_col_names) & where(is.character),
+                  .fns = ~clean_str(.)))
  
   
   dupe_cols_mer <- dupe_cols_cln %>%
