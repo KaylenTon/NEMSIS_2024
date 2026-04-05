@@ -43,7 +43,7 @@ qqnorm(sub_df_a$patient_age, main="Patient Age")
 
 #checking for NA
 sum(is.na(sub_df_a$level_of_care_provided_per_protocol))
-sub(is.na(sub_df_a$patient_age))
+sum(is.na(sub_df_a$patient_age))
 
 #summary statistics
 group_by(sub_df_a, level_of_care_provided_per_protocol) %>%
@@ -86,3 +86,8 @@ t_result <- t.test(patient_age ~ level_of_care_provided_per_protocol,
        data = sub_df_t,
        var.equal = FALSE)
 t_result
+
+report(t_result)
+
+
+

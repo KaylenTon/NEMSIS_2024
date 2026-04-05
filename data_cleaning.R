@@ -153,7 +153,7 @@ use_data <- reduce(sas_data_list, left_join, by = "PcrKey")
 # Selecting/reordering variables ------------------------------------------
 
 select_data <- use_data %>% 
-  select(PcrKey:EMSTotalCallTimeMin, contains(c("Dispatch", "Disposition", "Response", "Times", "Patient_", "Crew")))
+  dplyr::select(PcrKey:EMSTotalCallTimeMin, contains(c("Dispatch", "Disposition", "Response", "Times", "Patient_", "Crew")))
 
 # Removing NAs ------------------------------------------------------------
 
@@ -542,7 +542,7 @@ clean_NA <- clean_NA %>%
       is.na(patient_age_units) ~ patient_age
     )
   ) %>% 
-  select(-patient_age_units) %>% 
+  dplyr::select(-patient_age_units) %>% 
   mutate(
     age_group = as.factor(ifelse(patient_age >= 65, "Senior", "Younger")
     )) %>% 
@@ -575,7 +575,7 @@ clean_NA <- clean_NA %>%
       TRUE ~ ageinyear
     )
   ) %>% 
-  select(-ageinyear) %>% 
+  dplyr::select(-ageinyear) %>% 
   # relevel factors
   mutate(
     age_group = factor(age_group, levels = c("Younger", "Senior")),
@@ -584,7 +584,8 @@ clean_NA <- clean_NA %>%
 
 # TO MERGE DUPLICATE PCRKEY:
 source("cols_causing_duplication.R")
-#replace conflicting columns causing duplication with "Multiple" and keep max datetime_of_...
+#merge pcrkeys in duplicate columns with "_" and keep max datetime_of_...
+#create new variable: dt_of_dpaa_duration
 final_clean_NA <- paste_by_underscore()
 
 
