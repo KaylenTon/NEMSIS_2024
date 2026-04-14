@@ -60,7 +60,7 @@ paste_by_underscore <- function() {
   clean_str <- function(x) {
     x %>%
       str_remove_all("Yes|e.g\\.|,|\\(|\\)") %>% 
-      str_replace_all("/|\\-|or| ", "_") %>%
+      str_replace_all("/|\\-| ", "_") %>%
       str_replace_all("_+", "_") %>%
       str_trim()
   }
@@ -69,7 +69,7 @@ paste_by_underscore <- function() {
     mutate(across(.cols = all_of(dupe_col_names) & where(is.character),
                   .fns = ~clean_str(.)))
   
-  clean_NA <- clean_NA %>%
+  temp_clean_NA <- clean_NA %>%
     mutate(across(.cols = all_of(dupe_col_names) & where(is.character),
                   .fns = ~clean_str(.)))
  
@@ -107,7 +107,7 @@ paste_by_underscore <- function() {
   ## Combine clean_NA and dupe_cols_mer together
   
   # Remove all duplicated keys from the clean_NA so we can replace it with the rows from dupe_cols_mer
-  clean_NA_drop <- clean_NA %>%
+  clean_NA_drop <- temp_clean_NA %>%
     filter(!PcrKey %in% dupe_pcrkeys)
   
   final_clean_NA <- bind_rows(clean_NA_drop, dupe_cols_mer)
@@ -130,6 +130,7 @@ paste_by_underscore <- function() {
 }
 
 ## REPLACE DUPLICATE VALUES WITH "MULTIPLE"
+#currently, this function is not working as intended. Please go back and fix it later - 4/7/2026
 paste_by_multiple <- function() {
   # Retrieve duplicate PcrKeys from clean_NA
   dupe_pcrkeys <- clean_NA$PcrKey[duplicated(clean_NA$PcrKey)]
@@ -159,12 +160,15 @@ paste_by_multiple <- function() {
   
   dupe_cols_only <- dupe_cols_only %>%
     left_join(dupe_cols_df %>% 
-                select(PcrKey, diff_cols)%>% 
-                distinct(PcrKey, .keep_all = TRUE), by = "PcrKey") %>% 
-    filter(diff_cols != "")
+                dplyr::select(PcrKey, diff_cols)%>% 
+                dplyr::distinct(PcrKey, .keep_all = TRUE), by = "PcrKey") %>% 
+    dplyr::filter(diff_cols != "")
   
   dupe_col_names <- colnames(dupe_cols_only)
   dupe_col_names <- dupe_col_names[!dupe_col_names %in% c("PcrKey", "diff_cols", "datetime_of_destination_prearrival_alert_or_activation")]
+  
+  #specify columns to exclude from dupe_col_names, so merging skips these columns
+  exclude_cols <- c("PcrKey", "datetime_of_destination_prearrival_alert_or_activation")
   
   collapsed_clean_NA <- dupe_cols_df %>%
     group_by(PcrKey) %>%
@@ -185,20 +189,31 @@ paste_by_multiple <- function() {
         max(datetime_of_destination_prearrival_alert_or_activation, na.rm = TRUE) 
       },
       
-      across(
-        all_of(dupe_col_names), ~ {unique_vals <- unique(na.omit(.x))
+      across(all_of(dupe_col_names[!dupe_col_names %in% exclude_cols]
+      ), 
+      ~ {
+        unique_vals <- unique(na.omit(.x))
         
-        if(length(unique_vals) > 1){
+        if(length(unique_vals)>1){
           "Multiple"
         } else if (length(unique_vals) == 1) {
           as.character(unique_vals)
         } else {
           NA_character_
         }
-        }),
+      }
+      ),
+      
+      across(-all_of(c(dupe_col_names,
+                       "datetime_of_destination_prearrival_alert_or_activation",
+                       "dt_of_dpaa_duration")),
+             ~first(na.omit(.x))),
+      
       .groups = "drop")
   
-  ## Combine clean_NA and collapse_clean_NA together
+  
+  #remove "diff_cols" from collapsed_clean_NA
+  collapsed_clean_NA <- collapsed_clean_NA[,!names(collapsed_clean_NA) %in% "diff_cols"]
   
   # Remove all duplicated keys from the clean_NA so we can replace it with the rows from dupe_cols_mer
   clean_NA_drop <- clean_NA %>%
