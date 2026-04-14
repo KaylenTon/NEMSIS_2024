@@ -588,7 +588,6 @@ source("cols_causing_duplication.R")
 #create new variable: dt_of_dpaa_duration
 final_clean_NA <- paste_by_underscore()
 
-
 # Location table ----------------------------------------------------------
 
 location_df <- final_clean_NA %>% 
