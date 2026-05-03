@@ -4,33 +4,6 @@ library(tools)
 library(purrr)
 library(lubridate)
 
-# path <- "~/R PRACTICE/SAS2024CP25"
-# 
-# files <- list.files(
-#   path,
-#   pattern = "\\.sas7bdat$",
-#   full.names = T
-# )
-# 
-# system.time(
-#   data <- lapply(files, read_sas, n_max = 5)
-# )
-# 
-# names(data) <- file_path_sans_ext(basename(files))
-# 
-# use_tables <- c("pub_pcrevents",
-#                 "pcrpatientracegroup",
-#                 "factpcrturnarounddelay",
-#                 "factpcrtime",
-#                 "factpcrscenedelay",
-#                 "factpcrresponsedelay",
-#                 "factpcrdestinationteam")
-# 
-# unused_data <- data[use_tables] %>%
-#   reduce(left_join, by = "PcrKey") %>%
-#   distinct(PcrKey, .keep_all = TRUE)
-
-
 # Random sample 1% --------------------------------------------------------
 
 time_path <- ("C:/Users/Kaylen/OneDrive - University of South Florida/Documents/R PRACTICE/SAS2024CP25/factpcrtime.sas7bdat")
@@ -575,7 +548,7 @@ clean_NA <- clean_NA %>%
       TRUE ~ ageinyear
     )
   ) %>% 
-  dplyr::select(-ageinyear) %>% 
+  select(-ageinyear) %>% 
   # relevel factors
   mutate(
     age_group = factor(age_group, levels = c("Younger", "Senior")),
