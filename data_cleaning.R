@@ -126,7 +126,7 @@ use_data <- reduce(sas_data_list, left_join, by = "PcrKey")
 # Selecting/reordering variables ------------------------------------------
 
 select_data <- use_data %>% 
-  dplyr::select(PcrKey:EMSTotalCallTimeMin, contains(c("Dispatch", "Disposition", "Response", "Times", "Patient_", "Crew")))
+  select(PcrKey:EMSTotalCallTimeMin, contains(c("Dispatch", "Disposition", "Response", "Times", "Patient_", "Crew")))
 
 # Removing NAs ------------------------------------------------------------
 
