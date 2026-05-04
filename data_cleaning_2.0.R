@@ -175,8 +175,8 @@ event_df <- clean_NA %>%
     type_of_turn_around_delay= eResponse_12,
     type_of_scene_delay = eResponse_10,
     type_of_response_delay = eResponse_09,
-    abc = eSituation_13,
-    def = eSituation_11) %>% 
+    initial_patient_acuity = eSituation_13,
+    providers_primary_impression = eSituation_11) %>% 
   mutate(
     dispatch_reason = recode(
       dispatch_reason,
@@ -483,8 +483,19 @@ event_df <- clean_NA %>%
       "2209031" = "Mechanical Issue-Unit, Equipment, etc.",
       "2209033" = "Flight Planning",
       "2209035" = "Out of Service Area Response"
+    ),
+    initial_patient_acuity = recode(
+      initial_patient_acuity,
+      "2813001" = "Critical (Red)",
+      "2813003" = "Emergent (Yellow)",
+      "2813005" = "Lower Acuity (Green)",
+      "2813007" = "Dead without Resuscitation Efforts (Black)",
+      "2813009" = "Non-Acute/Routine"
     )
-  )
+  ) %>% 
+  left_join(eSituation_11_Diag_codes, by = c("providers_primary_impression" = "eSituation_11")) %>% 
+  mutate(providers_primary_impression = DiagnosisCodeDescr) %>%
+  select(-DiagnosisCodeDescr)
 
 time_df <- clean_NA %>% 
   select(PcrKey, EMSTransportTimeMin, EMSTotalCallTimeMin, contains("Times")) %>% 
@@ -578,3 +589,4 @@ patient_df <- clean_NA %>%
     age_group = factor(age_group, levels = c("Younger", "Senior")),
     age_interval_group = factor(age_interval_group, levels = c("0-4", "5-9", "10-14", "15-19", "20-24", "25-29", "30-34", "35-39", "40-44", "45-49", "50-54", "55-59", "60-64", "65-69", "70-74", "75-79", "80-84", "85+"))
   )
+
