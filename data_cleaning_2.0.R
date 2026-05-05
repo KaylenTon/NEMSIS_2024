@@ -591,3 +591,15 @@ patient_df <- clean_NA %>%
     age_group = factor(age_group, levels = c("Younger", "Senior")),
     age_interval_group = factor(age_interval_group, levels = c("0-4", "5-9", "10-14", "15-19", "20-24", "25-29", "30-34", "35-39", "40-44", "45-49", "50-54", "55-59", "60-64", "65-69", "70-74", "75-79", "80-84", "85+"))
   )
+
+#combine location, event, time, patient dfs into one df
+ncol(location_df) + ncol(event_df) + ncol(time_df) + ncol(patient_df) #total columns: 45
+#check if PcrKeys are the same among each df
+identical(location_df$PcrKey, event_df$PcrKey, time_df$PcrKey, patient_df$PcrKey) #TRUE
+
+
+
+
+#apply paste by underscore function
+
+#export df as .csv
