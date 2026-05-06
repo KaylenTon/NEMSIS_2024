@@ -595,11 +595,29 @@ patient_df <- clean_NA %>%
 #combine location, event, time, patient dfs into one df
 ncol(location_df) + ncol(event_df) + ncol(time_df) + ncol(patient_df) #total columns: 45
 #check if PcrKeys are the same among each df
-identical(location_df$PcrKey, event_df$PcrKey, time_df$PcrKey, patient_df$PcrKey) #TRUE
+dfs <- list(location_df, event_df, time_df, patient_df)
+all(sapply(dfs[-1], function(df) {
+  setequal(df$PcrKey, dfs[[1]]$PcrKey)
+}))
 
+#merge conflicting rows using underscore (paste_by_underscore)
+#NOTE: as of 5/5/2026, the paste_by_multiple() has NOT been updated to work on separate dataframes. Please do not use this function until further notice.
+source("cols_causing_duplication.R")
+clean_location_df <- paste_by_underscore(location_df)
+clean_event_df <- paste_by_underscore(event_df) #will have new column: $dt_of_dpaa_duration
+clean_time_df <- paste_by_underscore(time_df)
+clean_patient_df <- paste_by_underscore(patient_df)
 
+# check if PcrKeys are the same among each df and that there are no longer any duplicates
+cleaned_dfs <- list(clean_location_df, clean_event_df, clean_time_df, clean_patient_df)
+all(sapply(cleaned_dfs[-1], function(df) {
+  setequal(df$PcrKey, cleaned_dfs[[1]]$PcrKey) && !any(duplicated(df$PcrKey))
+}))
+ncol(clean_location_df) + ncol(clean_event_df) + ncol(clean_time_df) + ncol(clean_patient_df) #total columns: 46
 
-
-#apply paste by underscore function
+#bind all dataframes into one
+final_clean_NA <- reduce(cleaned_dfs, full_join, by = "PcrKey")
+str(final_clean_NA)
 
 #export df as .csv
+#write.csv(final_clean_NA, "../final_clean_NA.csv", row.names = FALSE)
