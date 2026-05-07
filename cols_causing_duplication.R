@@ -41,10 +41,13 @@ paste_by_underscore <- function(df) {
       distinct(PcrKey, .keep_all = TRUE)
   } else {
     frequency_tbl <- dupe_cols_df %>%
-      distinct(PcrKey, .keep_all= TRUE) %>%
+      #distinct(PcrKey, .keep_all= TRUE) %>% - uncomment this if you want to see each distinct count instead of for all duplicates
       filter(diff_cols != "") %>%
       separate_rows(diff_cols, sep = ";\\s*") %>% 
-      count(diff_cols, sort = TRUE)
+      group_by(diff_cols) %>%
+      summarise(n = n(), .groups = "drop") %>%
+      mutate(prop = n/sum(n)) %>%
+      arrange(desc(prop))
     
     print("Columns are causing duplications: ")
     print(frequency_tbl)

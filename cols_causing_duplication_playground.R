@@ -9,7 +9,7 @@ library(philentropy)
 # Thanks!
 
 dupe_pcrkeys <- clean_NA$PcrKey[duplicated(clean_NA$PcrKey)]
-duplicates <- location_df %>%
+duplicates <- event_df %>%
   filter(PcrKey %in% dupe_pcrkeys)
 
 #find_diffs() checks which columns have conflicting values that are causing duplicate PcrKeys
