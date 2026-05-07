@@ -14,21 +14,21 @@ table(final_clean_NA$level_of_care_provided_per_protocol)
 #about: the general level of care provided to this patient as defined per provider level in local EMS protocols or clinical guidelines
 
 # NULL VALUES - this was generated after collapsing together the duplicated pcrkeys
-# 4277 
+# 4264 
 # ALS - AEMT/Intermediate 
-# 13172 
+# 13133 
 # ALS - Paramedic 
-# 193090 
+# 193502 
 # BLS - All Levels 
-# 155712 
+# 156215 
 # Critical Care 
-# 6731 
+# 6802 
 # EMS and Other Health-Care Staff 
-# 745 
+# 757 
 # Integrated Health Care 
-# 867 
+# 922 
 # No Care Provided 
-# 11511
+# 11442
 
 #group null values to NA values
 final_clean_NA <- final_clean_NA %>%
@@ -38,6 +38,7 @@ table(final_clean_NA$level_of_care_provided_per_protocol)
 
 #check for total NA
 table(final_clean_NA$level_of_care_provided_per_protocol, useNA = "ifany")
+#NA: 138340
 
 #variable type
 #Quantitative variable: patient_age
@@ -54,8 +55,8 @@ str(sub_df)
 hist(sub_df$patient_age)
 summary(sub_df$patient_age)
 
-# Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-# 0.00   41.00   63.00   58.41   77.00  120.00 
+# Min. 1st Qu.  Median    Mean 3rd Qu.    Max.  
+# 0.00   40.00   63.00   57.98   77.00  120.00
 
 #The mean is less than the median, meaning the data is slightly skewed to the left
 # is this an issue? Should data be normalized before performing an ANOVA test?
@@ -63,7 +64,7 @@ summary(sub_df$patient_age)
 #each group of life support follows similar distributions in terms of age
 
 #imputing missing data
-sum(is.na(sub_df$level_of_care_provided_per_protocol))/nrow(sub_df) #26% of data is missing
+sum(is.na(sub_df$level_of_care_provided_per_protocol))/nrow(sub_df) #27% of data is missing
 sum(is.na(sub_df$patient_age))/nrow(sub_df)
 
 #replace NA values with "Missing"
