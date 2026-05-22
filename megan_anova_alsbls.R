@@ -50,6 +50,8 @@ sub_df <- subset(final_clean_NA, select = c(level_of_care_provided_per_protocol,
 #sub_df_a <- sub_df[sub_df$level_of_care_provided_per_protocol %in% groups,]
 str(sub_df)
 
+#remove rows that contain at least one NA
+sub_df <- na.omit(sub_df)
 
 #range of patient age
 hist(sub_df$patient_age)
@@ -63,15 +65,14 @@ summary(sub_df$patient_age)
 
 #each group of life support follows similar distributions in terms of age
 
-#imputing missing data
 sum(is.na(sub_df$level_of_care_provided_per_protocol))/nrow(sub_df) #27% of data is missing
 sum(is.na(sub_df$patient_age))/nrow(sub_df)
 
 #replace NA values with "Missing"
-sub_df <- sub_df %>%
-  mutate(level_of_care_provided_per_protocol = ifelse(is.na(level_of_care_provided_per_protocol),
-                                                      "Unknown",
-                                                      level_of_care_provided_per_protocol))
+# sub_df <- sub_df %>%
+#   mutate(level_of_care_provided_per_protocol = ifelse(is.na(level_of_care_provided_per_protocol),
+#                                                       "Unknown",
+#                                                       level_of_care_provided_per_protocol))
 
 table(sub_df$level_of_care_provided_per_protocol)
 sub_df$level_of_care_provided_per_protocol <- as.factor(sub_df$level_of_care_provided_per_protocol)
