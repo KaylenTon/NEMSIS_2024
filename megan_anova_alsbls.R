@@ -132,7 +132,7 @@ kruskal.test(patient_age ~ level_of_care_provided_per_protocol, data = sub_df)
 #ANOVA welch tests
 res_welch <- oneway.test(patient_age ~ level_of_care_provided_per_protocol,
             data = sub_df,
-            var.equal = TRUE)
+            var.equal = FALSE)
 
 res_aov <- aov(patient_age ~ level_of_care_provided_per_protocol,
                data = sub_df)
