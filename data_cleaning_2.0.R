@@ -139,6 +139,9 @@ library(lubridate)
 
 use_data <- reduce(sas_data_list, left_join, by = "PcrKey")
 
+length(unique(use_data$PcrKey)) #verify length = 602986
+# select_data has 635855 because of 1:M relationship between values:PcrKey
+
 select_data <- use_data %>% 
   select(PcrKey:EMSTotalCallTimeMin, contains(c("Dispatch", "Disposition", "Situation", "Response", "Times", "Patient_", "Crew")))
 
@@ -602,7 +605,7 @@ all(sapply(dfs[-1], function(df) {
 
 #merge conflicting rows using underscore (paste_by_underscore)
 #NOTE: as of 5/5/2026, the paste_by_multiple() has NOT been updated to work on separate dataframes. Please do not use this function until further notice.
-source("cols_causing_duplication.R")
+source("merge_duplicates.R")
 clean_location_df <- paste_by_underscore(location_df)
 clean_event_df <- paste_by_underscore(event_df) #will have new column: $dt_of_dpaa_duration
 clean_time_df <- paste_by_underscore(time_df)

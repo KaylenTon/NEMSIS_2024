@@ -8,6 +8,10 @@ library(mgsub)
 paste_by_underscore <- function(df) {
   # Retrieve duplicate PcrKeys from clean_NA
   dupe_pcrkeys <- clean_NA$PcrKey[duplicated(clean_NA$PcrKey)]
+  
+  # duplicates, including the first instance of each duplicated pcrkey
+  #clean_NA %>% filter(PcrKey %in% dupe_pcrkeys)
+  
   duplicates <- df %>%
     filter(PcrKey %in% dupe_pcrkeys)
   
