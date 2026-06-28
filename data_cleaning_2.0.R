@@ -148,7 +148,7 @@ select_data <- use_data %>%
 to_NA <- c("7701003", "7701001", "7701005", "Not Recorded", "Not Applicable", "")
 
 clean_NA <- select_data %>% 
-  mutate(across(everything(), ~ if_else(.x %in% to_NA, NA, .x))) %>% 
+  mutate(across(everything(), ~ if_else(as.character(.x) %in% to_NA, NA, .x))) %>% 
   filter(
     !is.na(ePatient_15), # and removing rows where age is NA
     !is.na(ePatient_16)
