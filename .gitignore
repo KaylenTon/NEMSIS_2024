@@ -6,3 +6,15 @@
 .DS_Store
 .quarto
 .RDataTmp
+
+#DuckDB
+*.duckdb
+*.db
+
+#DuckDB temp files
+*.wal
+
+#Parquet data
+*.parquet
+parquet/
+data/

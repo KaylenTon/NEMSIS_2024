@@ -139,6 +139,22 @@ library(lubridate)
 
 use_data <- reduce(sas_data_list, left_join, by = "PcrKey")
 
+df <- sas_data_list$computedelements %>%
+  left_join(sas_data_list$factpcrprimaryimpression,
+            by = "PcrKey") %>%
+  left_join(sas_data_list$pcrpatientracegroup,
+            by = "PcrKey") %>%
+  left_join(sas_data_list$pub_pcrevents,
+            by = "PcrKey")
+df <- sas_data_list$computedelements %>%
+  select(PcrKey, ageinyear) %>%
+  left_join(
+    sas_data_list$factpcrprimaryimpression %>% 
+      select(PcrKey, eSituation_11),
+    by = "PcrKey"
+  )
+
+
 length(unique(use_data$PcrKey)) #verify length = 602986
 # select_data has 635855 because of 1:M relationship between values:PcrKey
 
