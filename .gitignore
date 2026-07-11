@@ -13,6 +13,8 @@
 
 #DuckDB temp files
 *.wal
+.tmp
+.tmp/
 
 #Parquet data
 *.parquet
