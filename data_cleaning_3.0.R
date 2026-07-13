@@ -138,6 +138,7 @@ for (f in files){
   datasets[[name]] <- open_dataset(f)
 }
 
+
 sample_keys <- datasets$factpcrtime %>%
   select(PcrKey) %>%
   distinct() %>%
@@ -163,6 +164,10 @@ sampled_datasets <- lapply(datasets, function(ds){
 sampled_dfs <- lapply(sampled_datasets,
                       collect)
 
+save(sampled_dfs, file = "sampled_dfs.RData")
+
+
+#### BEGIN HERE ####
 #add diagnosis description
 sampled_dfs$factpcrprimaryimpression <-
   sampled_dfs$factpcrprimaryimpression %>%
@@ -171,8 +176,9 @@ sampled_dfs$factpcrprimaryimpression <-
     by = "eSituation_11"
   )
 
-
+###################
 ### REMOVE NAs ###
+###################
 
 to_NA <- c(
   "7701003",
@@ -190,15 +196,78 @@ sampled_dfs <- lapply(sampled_dfs, function(df){
   
 })
 
+##########################################
 ### RENAME AND CAST TO VARIABLE TYPES ###
+##########################################
 
 column_map <- c(eDisposition_25 = "datetime_of_destination_prearrival_alert_or_activation",
-                eDisposition_24 = "destination_team_prearrival_alert_or_activation")
+                eDisposition_24 = "destination_team_prearrival_alert_or_activation",
+                eSituation_11 = "providers_primary_impression",
+                eResponse_09 = "type_of_response_delay",
+                eResponse_10 = "type_of_scene_delay",
+                eTimes_01 = "PSAP_call_datetime",
+                eTimes_03 = "unit_notified_by_dispatch_datetime",
+                eTimes_05 = "unit_en_route_datetime",
+                eTimes_06 = "unit_arrived_on_scene_datetime",
+                eTimes_07 = "arrived_at_patient_datetime",
+                eTimes_09 = "unit_left_scene_datetime",
+                eTimes_11 = "patient_arrived_at_destination_datetime",
+                eTimes_12 = "destination_patient_transfer_of_care_datetime",
+                eTimes_13 = "unit_back_in_service_datetime",
+                eReponse_12 = "type_of_turn_around_delay",
+                ePatient_14 = "patient_race",
+                eDispatch_01 = "dispatch_reason",
+                eDispatch_02 = "EMD_performed",
+                eArrest_14 = "datetime_of_cardiac_arrest",
+                eArrest_01 = "type_of_scene_delay",
+                eArrest_02 = "type_of_scene_delay",
+                eArrest_05 = "type_of_scene_delay",
+                eArrest_07 = "type_of_scene_delay",
+                eArrest_11 = "type_of_scene_delay",
+                eArrest_16 = "type_of_scene_delay",
+                eArrest_18 = "type_of_scene_delay",
+                eArrest_20 = "type_of_scene_delay",
+                eArrest_21 = "type_of_scene_delay",
+                eArrest_22 = "type_of_scene_delay",
+                eDisposition_19 = "type_of_scene_delay",
+                eDisposition_16 = "type_of_scene_delay",
+                eDisposition_21 = "type_of_scene_delay",
+                eDisposition_22 = "type_of_scene_delay",
+                eDisposition_32 = "type_of_scene_delay",
+                eDisposition_27 = "type_of_scene_delay",
+                eDisposition_28 = "type_of_scene_delay",
+                eDisposition_29 = "type_of_scene_delay",
+                eDisposition_30 = "type_of_scene_delay",
+                eOutcome_01 = "type_of_scene_delay",
+                eOutcome_02 = "type_of_scene_delay",
+                eOutcome_11 = "type_of_scene_delay",
+                eOutcome_16 = "type_of_scene_delay",
+                eOutcome_18 = "type_of_scene_delay",
+                ePatient_15 = "type_of_scene_delay",
+                ePatient_16 = "type_of_scene_delay",
+                ePayment_01 = "type_of_scene_delay",
+                ePayment_50 = "type_of_scene_delay",
+                eReponse_05 = "type_of_scene_delay",
+                eResponse_07 = "type_of_scene_delay",
+                eResponse_23 = "type_of_scene_delay",
+                eScene_01 = "type_of_scene_delay",
+                eScene_06 = "type_of_scene_delay",
+                eScene_07 = "type_of_scene_delay",
+                eScene_08 = "type_of_scene_delay",
+                eScene_09 = "type_of_scene_delay",
+                eSituation_02 = "type_of_scene_delay",
+                eSituation_07 = "type_of_scene_delay",
+                eSituation_08 = "type_of_scene_delay",
+                eSituation_13 = "type_of_scene_delay",
+                eSituation_20 = "type_of_scene_delay",
+                eSituation_01 = "type_of_scene_delay",
+                eSituation_18 = "type_of_scene_delay",
+                eDisposition_17 = "type_of_scene_delay",)
 
 #for each df, print all columns and unique values for each column
 
 ### FACTPCRDDESTINATIONTEAM ###
-for (col in names(sampled_dfs$factpcrdestinationteam)){
+for (col in setdiff(names(sampled_dfs$factpcrdestinationteam), "PcrKey")){
   
   cat("\n====================\n")
   cat("COLUMN:", col, "\n")
@@ -222,6 +291,7 @@ eDisposition_24_lookup <- c(
   "4224019" = "Yes-Sepsis"
 )
 
+#translate code values to english
 sampled_dfs$factpcrdestinationteam <-
   sampled_dfs$factpcrdestinationteam %>%
   mutate(
@@ -231,8 +301,64 @@ sampled_dfs$factpcrdestinationteam <-
       ]
   )
 
-test_df <- sampled_dfs$factpcrdestinationteam
-#remove NA and translate code values to english
+#convert eDisposition_25 to datetime
+sampled_dfs$factpcrdestinationteam <-
+  sampled_dfs$factpcrdestinationteam %>%
+  mutate(
+    eDisposition_25 = parse_date_time(eDisposition_25, orders = "dby HMS"))
+
+#remove lookup from R environment
+rm(eDisposition_24_lookup)
+
+
+### FACTPCRRESPONSEDELAY ###
+for (col in setdiff(names(sampled_dfs$factpcrresponsedelay), "PcrKey")){
+  
+  cat("\n====================\n")
+  cat("COLUMN:", col, "\n")
+  cat("====================\n")
+  
+  print(unique(sampled_dfs$factpcrresponsedelay[[col]]))
+  
+}
+
+#create code lookups
+eResponse_09_lookup <- c(
+  "2209001" = "Crowd",
+  "2209003" = "Directions/Unable to Locate",
+  "2209005" = "Distance",
+  "2209007" = "Diversion (Different Incident)",
+  "2209009" = "HazMat",
+  "2209011" = "None/No Delay",
+  "2209013" = "Other",
+  "2209015" = "Rendezvous Transport Unavailable",
+  "2209017" = "Route Obstruction (e.g., Train)",
+  "2209019" = "Scene Safety (Not Secure for EMS)",
+  "2209021" = "Staff Delay",
+  "2209023" = "Traffic",
+  "2209025" = "Vehicle Crash Involving this Unit",
+  "2209027" = "Vehicle Failure of this Unit",
+  "2209029" = "Weather",
+  "2209031" = "Mechanical Issue-Unit, Equipment, etc.",
+  "2209033" = "Flight Planning",
+  "2209035" = "Out of Service Area Response"
+)
+
+#translate code values to english
+sampled_dfs$factpcrresponsedelay <-
+  sampled_dfs$factpcrresponsedelay %>%
+  mutate(
+    eResponse_09 =
+      eResponse_09_lookup[
+        as.character(eResponse_09)
+      ]
+  )
+
+#remove lookup from R environment
+rm(eResponse_09_lookup)
+
+
+
 
 
 # rename all table columns to english
